@@ -56,7 +56,7 @@ export const REGISTRY = {
     { name: "tiltCard", where: "components/motion/TiltCard.tsx", note: "perspective tilt on pointer, fine-pointer + reduced-motion gated" },
     { name: "pricingLift", where: "pages/Landing.tsx", note: "whileHover y:-6 spring" },
     { name: "faqAccordion", where: "pages/landing/FaqItem.tsx", note: "height/opacity expand" },
-    { name: "voicesCarousel", where: "pages/landing/Voices.tsx", note: "testimonial rotation" },
+    { name: "voicesCarousel", where: "pages/landing/Voices.tsx", note: "example-household rotation" },
     { name: "ctaGlow", where: "pages/Landing.tsx", note: "grid mask + radial glow opacity pulse" },
   ],
 } as const;

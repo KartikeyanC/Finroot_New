@@ -15,16 +15,25 @@
     <meta name="apple-mobile-web-app-title" content="FinRoot" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- TODO: Set the document title to the name of your application -->
+    <!-- Kept in step with BrandDocumentTitle, which sets the same title once React runs. -->
     <title>FinRoot — Wealth OS for Modern Households</title>
-    <meta name="description" content="FinRoot is the calm, intelligent wealth OS for households serious about income, expenses, investments, budgets and goals — all in one place." />
+    <meta name="description" content="One money plan the whole family can see. FinRoot divides each month across seven buckets — Needs to Agri — with bills, premiums, goals and investments in one private ledger. Free plan, no tracking cookies." />
     <meta name="author" content="FinRoot" />
 
-    <!-- TODO: Update og:title to match your application name -->
-    <meta property="og:title" content="FinRoot — Wealth OS for Modern Households" />
-    <meta property="og:description" content="The calm, intelligent wealth OS for households serious about income, expenses, investments, budgets and goals." />
+    <meta property="og:site_name" content="FinRoot" />
+    <meta property="og:title" content="FinRoot — One money plan the whole family can see" />
+    <meta property="og:description" content="Seven buckets for every paycheck, bills and premiums on one calendar, and household roles for who sees what. Made in India." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:locale" content="en_IN" />
+    <!--
+      og:image / twitter:image / canonical need an absolute URL on the
+      production domain, which isn't settled yet. The old values pointed at
+      Lovable's generic image and @Lovable account — wrong for a FinRoot share
+      card — so they were removed rather than left misattributed.
+    -->
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"WebApplication","name":"FinRoot","applicationCategory":"FinanceApplication","operatingSystem":"Web","description":"One money plan the whole family can see: seven-bucket budgeting, bills and premiums on one calendar, goals and investments in one private ledger.","inLanguage":"en-IN"}
+    </script>
     <!--
       Fonts are self-hosted (see public/fonts/README.md). One `latin` variable
       file covers the whole weight range; `latin-ext` is left to unicode-range
@@ -44,9 +53,7 @@
     -->
     <link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:card" content="summary" />
   </head>
 
   <body>

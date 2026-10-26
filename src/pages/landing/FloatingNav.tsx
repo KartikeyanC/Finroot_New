@@ -33,6 +33,9 @@ function useActiveSection(ids: string[]) {
   return active;
 }
 
+/* Module-level so the hook's effect dependency is stable across renders. */
+const NAV_IDS = NAV.map((n) => n.href.slice(1));
+
 /* ── 4. Floating, scroll-aware glass nav ────────────────────────── */
 export default function FloatingNav() {
   const { scrollY } = useScroll();
@@ -40,7 +43,7 @@ export default function FloatingNav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const last = useRef(0);
-  const active = useActiveSection(["product", "workflow", "voices", "pricing", "faq"]);
+  const active = useActiveSection(NAV_IDS);
 
   // Track the promo banner so the nav floats *below* it at the top of the page
   // and slides up to the edge as the banner scrolls away (or is dismissed).
@@ -129,7 +132,7 @@ export default function FloatingNav() {
         </div>
         {/* BUG-053 — p-2 + a w-5 icon was a 36×36 target, under the 44px
             floor; p-3 brings it to exactly 44×44 without changing the icon. */}
-        <button onClick={() => setOpen((o) => !o)} data-cursor aria-label="Menu" className="md:hidden text-white p-3 -mr-3">
+        <button onClick={() => setOpen((o) => !o)} data-cursor aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="landing-mobile-menu" className="md:hidden text-white p-3 -mr-3">
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
@@ -139,6 +142,7 @@ export default function FloatingNav() {
           <motion.div
             initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
+            id="landing-mobile-menu"
             className="md:hidden mx-auto max-w-5xl mt-2 rounded-2xl border border-white/10 bg-[#06070a]/90 backdrop-blur-xl p-4"
           >
             {NAV.map((n) => (

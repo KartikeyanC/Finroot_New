@@ -25,8 +25,10 @@ const HEADLINE_CLASS =
 export default function KineticHeadline({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion();
   const lines = [
-    [{ t: "The calm command" }],
-    [{ t: "center for" }, { t: "your money.", em: true }],
+    // Persona-led (research: the Household CFO). Two lines, like before, so
+    // the hero keeps its balance against the showcase.
+    [{ t: "One money plan" }],
+    [{ t: "the whole family" }, { t: "can see.", em: true }],
   ];
 
   // Stage 4.9 / BUG-051 — the animated headline starts at opacity 0 and only
@@ -67,9 +69,10 @@ export default function KineticHeadline({ ready }: { ready: boolean }) {
           ))}
           {/*
             Stage 4.9 / BUG-050 — each line is its own block, so the DOM held
-            "The calm command" immediately followed by "center for", and every
-            text extraction (accessible name, screen readers, copy-paste,
-            search indexing) read "commandcenter". The lines need real
+            one line immediately followed by the next ("The calm command" +
+            "center for" in the old headline), and every text extraction
+            (accessible name, screen readers, copy-paste, search indexing)
+            read them run together. The lines need real
             whitespace between them; in a block layout it costs nothing visually.
           */}
           {li < lines.length - 1 ? " " : ""}

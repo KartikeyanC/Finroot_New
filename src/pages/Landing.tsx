@@ -13,21 +13,23 @@ import { useBranding } from "@/hooks/useBranding";
 import { useResolvedPricing } from "@/hooks/usePricingContent";
 
 import {
-  BUCKETS,
   FAQ,
   FEATURES,
   MARQUEE,
-  STATS,
   WORKFLOW,
 } from "./landing/content";
 import { Aurora, Cursor, GlobalFX, Preloader } from "./landing/effects";
 import { card, eyebrow, CTA_PRIMARY } from "./landing/tokens";
-import { CountUp, Magnetic, Reveal, SpotlightCard } from "./landing/primitives";
+import { Magnetic, Reveal, SpotlightCard } from "./landing/primitives";
 import GlassDashboard from "./landing/GlassDashboard";
 import FloatingNav from "./landing/FloatingNav";
 import KineticHeadline from "./landing/KineticHeadline";
 import Voices from "./landing/Voices";
 import FaqItem from "./landing/FaqItem";
+import WhoFor from "./landing/WhoFor";
+import BucketSplitter from "./landing/BucketSplitter";
+import Farming from "./landing/Farming";
+import Privacy from "./landing/Privacy";
 
 /* ═══════════════════════════ page ═══════════════════════════ */
 const Landing = () => {
@@ -105,13 +107,13 @@ const Landing = () => {
 
             <motion.p initial={{ opacity: 0, y: 18 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7, delay: 0.5 }}
               className="mt-7 text-lg text-[#9aa3a0] max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Income, spending, investments and goals — unified on the 7-bucket model. Built for people who want clarity, not another dashboard to manage.
+              Divide each month across seven buckets, see every bill and premium on one calendar, and share goals with the people you live with — so your household decides on the 1st instead of arguing on the 30th.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 18 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7, delay: 0.62 }}
               className="mt-9 flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3">
               <Magnetic>
-                <Link to="/auth" data-cursor>
+                <Link to="/auth?tab=signup" data-cursor>
                   <Button className={`${CTA_PRIMARY} px-6 h-12 text-base group relative overflow-hidden`}>
                     <span className="relative z-10 flex items-center">
                       Start free — no card
@@ -121,10 +123,15 @@ const Landing = () => {
                   </Button>
                 </Link>
               </Magnetic>
-              <a href="#product" data-cursor className="px-6 h-12 inline-flex items-center gap-2 text-sm text-[#c9cfcc] hover:bg-white/5 rounded-xl border border-white/15 transition-colors">
-                See the product <ChevronDown className="w-4 h-4" />
+              <a href="#method" data-cursor className="px-6 h-12 inline-flex items-center gap-2 text-sm text-[#c9cfcc] hover:bg-white/5 rounded-xl border border-white/15 transition-colors">
+                Try the seven buckets <ChevronDown className="w-4 h-4" aria-hidden="true" />
               </a>
             </motion.div>
+
+            <motion.p initial={{ opacity: 0 }} animate={ready ? { opacity: 1 } : {}} transition={{ duration: 0.7, delay: 0.74 }}
+              className="mt-5 text-sm text-[#8b9a94]">
+              Free plan · No card needed · No tracking cookies
+            </motion.p>
 
           </div>
 
@@ -151,21 +158,6 @@ const Landing = () => {
           </motion.div>
         </div>
 
-        {/* stats strip — BUG-053: text-[11px] was 1px under the 12px floor */}
-        <Reveal className="mt-20 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.12em] text-[#8b9a94]">
-          {STATS.map((s, i) => (
-            <span key={s.v} className="inline-flex items-center gap-8">
-              <span><CountUp value={s.k} className="text-[#19B886] tracking-tight text-sm normal-case" /> <span className="ml-1.5">{s.v}</span></span>
-              {/* Decorative separator, so it needs no contrast ratio — but at
-                  #2f3633 (1.63:1) it was invisible even to people who can see
-                  it, which defeats the only job it has. aria-hidden because a
-                  screen reader announcing "slash" between stats is noise. */}
-              {i < STATS.length - 1 && (
-                <span aria-hidden="true" className="text-[#4c5551]">/</span>
-              )}
-            </span>
-          ))}
-        </Reveal>
       </section>
 
       {/* ═══ MARQUEE ═══ */}
@@ -189,6 +181,9 @@ const Landing = () => {
           ))}
         </div>
       </div>
+
+      {/* ═══ WHO IT'S FOR ═══ */}
+      <WhoFor />
 
       {/* ═══ PRODUCT — bento ═══ */}
       <section id="product" className="max-w-6xl mx-auto px-6 py-28 scroll-mt-24">
@@ -214,42 +209,9 @@ const Landing = () => {
             </Reveal>
           ))}
 
-          {/* 7-bucket ring */}
+          {/* The seven buckets — interactive (replaced the static ring) */}
           <Reveal className="md:col-span-6">
-            <div className={`${card} p-10 overflow-hidden`}>
-              <div className="grid md:grid-cols-2 gap-10 items-center">
-                <div>
-                  <div className={eyebrow + " mb-3"}>The 7-bucket ritual</div>
-                  <h3 className="text-3xl md:text-4xl font-semibold leading-tight mb-4 text-white">An ancient idea, engineered for modern paychecks.</h3>
-                  <p className="text-[#9aa3a0] leading-relaxed mb-6">Every salary auto-distributes into seven intentional buckets. Spend without guilt. Invest without thought. Give without hesitation.</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {BUCKETS.map((b) => (
-                      <div key={b} className="flex items-center gap-2 text-sm text-[#c9cfcc]"><Check className="w-3.5 h-3.5 text-[#19B886]" />{b}</div>
-                    ))}
-                  </div>
-                </div>
-                <div className="relative aspect-square max-w-md mx-auto w-full">
-                  <div className="absolute inset-10 rounded-full bg-[#19B886]/10 blur-3xl" />
-                  <motion.div className="absolute inset-0" animate={reduce ? undefined : { rotate: 360 }} transition={reduce ? undefined : { duration: 60, ease: "linear", repeat: Infinity }}>
-                    <div className="absolute inset-0 rounded-full border border-[#C9A84C]/25" />
-                    <div className="absolute inset-8 rounded-full border border-[#19B886]/25" />
-                    <div className="absolute inset-16 rounded-full border border-white/10" />
-                    {BUCKETS.map((_, i) => {
-                      const angle = (i / 7) * Math.PI * 2 - Math.PI / 2;
-                      const x = 50 + 50 * Math.cos(angle); const y = 50 + 50 * Math.sin(angle);
-                      return <div key={i} className="absolute w-2.5 h-2.5 rounded-full bg-[#19B886] shadow-[0_0_12px_rgba(25,184,134,0.8)]" style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%,-50%)" }} />;
-                    })}
-                  </motion.div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className={eyebrow + " mb-2"}>Allocated</div>
-                      <div className="text-5xl font-semibold text-white"><CountUp value="100%" /></div>
-                      <div className="text-sm text-[#8b9a94] mt-1">across 7 buckets</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <BucketSplitter />
           </Reveal>
         </div>
       </section>
@@ -282,14 +244,20 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ═══ VOICES — carousel ═══ */}
+      {/* ═══ FARMING HOUSEHOLDS ═══ */}
+      <Farming />
+
+      {/* ═══ HOUSEHOLDS — carousel ═══ */}
       <section id="voices" className="max-w-6xl mx-auto px-6 py-28 scroll-mt-24">
         <Reveal className="text-center mb-14">
-          <div className={eyebrow + " mb-3"}>Voices</div>
-          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">Calm money, in their words.</h2>
+          <div className={eyebrow + " mb-3"}>Households like yours</div>
+          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">Different incomes. The same seven buckets.</h2>
         </Reveal>
         <Voices />
       </section>
+
+      {/* ═══ PRIVACY ═══ */}
+      <Privacy />
 
       {/* ═══ PRICING ═══ */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 py-28 scroll-mt-24">
@@ -352,7 +320,7 @@ const Landing = () => {
             <h2 className="text-4xl md:text-6xl font-semibold tracking-tight max-w-3xl mx-auto leading-[1.05] text-white">Begin the ritual your future self will thank you for.</h2>
             <p className="mt-6 text-[#9aa3a0] max-w-xl mx-auto">A lifetime of clarity, starting with one quiet decision today.</p>
             <Magnetic className="inline-block mt-10">
-              <Link to="/auth" data-cursor>
+              <Link to="/auth?tab=signup" data-cursor>
                 <Button className={`${CTA_PRIMARY} h-12 px-8 text-base group relative overflow-hidden`}>
                   <span className="relative z-10 flex items-center">Get started — it's free <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" /></span>
                   <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
@@ -382,9 +350,9 @@ const Landing = () => {
               marketing page: a visitor who wanted to know what happens to their
               financial data was sent nowhere. They are real routes now. */}
           {[
-            { t: "Product", l: [{ n: "Features", h: "#product" }, { n: "Pricing", h: "#pricing" }] },
+            { t: "Product", l: [{ n: "Who it's for", h: "#who" }, { n: "Features", h: "#product" }, { n: "Farming households", h: "#farming" }, { n: "Pricing", h: "#pricing" }] },
             { t: "Company", l: [{ n: "FAQ", h: "#faq" }, { n: "Support", h: "/support" }, { n: "Status", h: "/status" }] },
-            { t: "Legal", l: [{ n: "Privacy", h: "/privacy" }, { n: "Terms", h: "/terms" }] },
+            { t: "Legal", l: [{ n: "Your data", h: "#privacy" }, { n: "Privacy policy", h: "/privacy" }, { n: "Terms", h: "/terms" }] },
           ].map((col) => (
             <div key={col.t}>
               <div className={eyebrow + " mb-3"}>{col.t}</div>
