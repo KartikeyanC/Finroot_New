@@ -434,13 +434,17 @@ test.describe("UI · public routes", () => {
     expect(found, found.join("")).toEqual([]);
   });
 
-  /** UI-T05 — the hero `h1` must read as a sentence, not as "commandcenter". */
+  /**
+   * UI-T05 — the hero `h1` must read as a sentence, not run its lines together.
+   * (It was "commandcenter" on the old landing page, BUG-050; the home page's
+   * headline is split across a line break and an <em>, which is the same risk.)
+   */
   test("UI-T05 · hero h1 reads correctly", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     const h1 = page.locator("h1").first();
     const text = (await h1.innerText()).replace(/\s+/g, " ").trim();
-    expect(text).toBe("The calm command center for your money.");
+    expect(text).toBe("Your household's money, clearly answered.");
   });
 
   /**
@@ -455,7 +459,7 @@ test.describe("UI · public routes", () => {
     await page.goto("/");
     const h1 = page.locator("h1").first();
     await expect(h1).toBeVisible();
-    await expect(h1).toContainText("The calm command");
+    await expect(h1).toContainText("Your household's money");
     const opacity = await h1.evaluate((el) => getComputedStyle(el).opacity);
     expect(Number(opacity)).toBeGreaterThan(0.99);
   });
@@ -510,8 +514,12 @@ test.describe("UI · public routes", () => {
     await expect(page.locator("#signin-email")).toHaveValue("keyboard@example.com");
   });
 
-  /** UI-T19 — the preloader overlay must leave the DOM, not just fade out. */
-  test("UI-T19 · preloader unmounts once the landing has loaded", async ({ page }) => {
+  /**
+   * UI-T19 — no overlay may be left covering the page. (The old landing had a
+   * preloader splash; the home page has none, so this now guards against any
+   * fixed layer — a menu sheet, a banner — sitting over the hero's centre.)
+   */
+  test("UI-T19 · nothing fixed covers the landing once it has loaded", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(4000);

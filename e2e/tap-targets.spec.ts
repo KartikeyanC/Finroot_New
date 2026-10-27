@@ -11,38 +11,30 @@ import { EMAIL, PASSWORD, signInAndUnlock } from "./auth";
  * only measured once.
  */
 
-test("landing: carousel dot is clickable 9px outside the visible dot", async ({ page }) => {
-  // The carousel auto-advances every 5.2 s, and the active dot is wider than the
-  // others — so between measuring a dot and clicking it, the row can reflow and
-  // the click lands somewhere else. Reduced motion disables the interval, which
-  // makes the geometry stable; it does not change the dots or their hit areas.
+test("landing: the controls a thumb has to hit clear 44px", async ({ page }) => {
+  // The old landing page had a testimonial carousel whose 6px dots needed an
+  // enlarged hit area (BUG-093/095). The home page has no dots: its small
+  // controls are the household tabs, the question buttons and the bucket-rail
+  // arrows, and they are full-size rather than padded up from something tiny.
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await page.waitForTimeout(3000);
-  const dots = page.locator('#voices button[aria-label^="Voice"]');
-  await dots.first().scrollIntoViewIfNeeded();
-  await page.waitForTimeout(400);
-
-  // The active dot is the wide one (w-8); pick an inactive one so a landed
-  // click has a visible consequence. Asserting on the quote alone would pass
-  // for the wrong reason whenever the carousel auto-advances.
-  const n = await dots.count();
-  let target = -1;
-  for (let i = 0; i < n; i++) {
-    const b = (await dots.nth(i).boundingBox())!;
-    if (b.width < 10) { target = i; break; }
+  await page.waitForTimeout(2000);
+  const controls = [
+    '#households [role="tab"]',
+    "#ask .qs button",
+    '#buckets button[aria-label^="Scroll buckets"]',
+  ];
+  for (const sel of controls) {
+    const loc = page.locator(sel);
+    await loc.first().scrollIntoViewIfNeeded();
+    const n = await loc.count();
+    expect(n, `${sel} should exist`).toBeGreaterThan(0);
+    for (let i = 0; i < n; i++) {
+      const b = (await loc.nth(i).boundingBox())!;
+      expect(b.height, `${sel} #${i} height`).toBeGreaterThanOrEqual(44);
+      expect(b.width, `${sel} #${i} width`).toBeGreaterThanOrEqual(44);
+    }
   }
-  expect(target, "expected at least one inactive dot").toBeGreaterThanOrEqual(0);
-
-  const box = (await dots.nth(target).boundingBox())!;
-  expect(box.height, "the dot must still LOOK 6px").toBeLessThanOrEqual(6.5);
-  expect(box.width, "an inactive dot must still LOOK 6px wide").toBeLessThanOrEqual(6.5);
-
-  // click 9 px above its centre — inside the enlarged hit area, outside the dot
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2 - 9);
-  await page.waitForTimeout(700);
-  const after = (await dots.nth(target).boundingBox())!;
-  expect(after.width, "the clicked dot should now be the active (wide) one").toBeGreaterThan(20);
 });
 
 test("landing: footer links are >=24px tall", async ({ page }) => {

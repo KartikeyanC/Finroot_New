@@ -1,0 +1,111 @@
+/* Home page (src/pages/home). Generated from the standalone website's CSS and
+   then maintained here by hand: every selector is scoped under `.fh`, animation
+   names carry an `fh-` prefix, fonts are the app's self-hosted families. */
+
+/* ─── pricing ─── */
+/* The number of plans comes from the database (1, 2 or 3+), so the column count is a variable.
+   Narrower sets are centred on wide screens; the phone rule below stacks them regardless. */
+.fh .plans { --n: 3; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 14px; margin-top: 48px; align-items: stretch; }
+@media (min-width: 1081px) {
+  .fh .plans.n1 { max-width: 420px; margin-inline: auto; }
+  .fh .plans.n2 { max-width: 880px; margin-inline: auto; }
+}
+.fh .plan { border: 1px solid var(--line); border-radius: 26px; padding: 30px; display: flex; flex-direction: column; background: #fff; }
+.fh .plan.feat { background: linear-gradient(170deg, var(--sky-1), #2d33a8); color: #fff; border-color: transparent; box-shadow: 0 40px 80px -40px rgba(79,87,222,.7); }
+.fh .plan .pt { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+.fh .plan .tag { font: 500 10.5px var(--mono); letter-spacing: .06em; padding: 4px 9px; border-radius: 999px; background: #fff; color: var(--accent); }
+.fh .plan .pp { margin-top: 20px; display: flex; align-items: baseline; gap: 4px; }
+.fh .plan .pp strong { font-size: 52px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.fh .plan .pp span,
+.fh .plan .pb { color: var(--muted); font-size: 14.5px; }
+.fh .plan.feat .pp span,
+.fh .plan.feat .pb,
+.fh .plan.feat li { color: rgba(255,255,255,.82); }
+.fh .plan .pb { margin: 10px 0 22px; }
+.fh .plan ul { list-style: none; padding: 20px 0 0; margin: 0 0 26px; border-top: 1px solid var(--line); display: grid; gap: 10px; font-size: 15px; color: var(--ink-2); flex: 1; }
+.fh .plan.feat ul { border-color: rgba(255,255,255,.18); }
+.fh .plan li { display: flex; gap: 10px; }
+.fh .plan li svg { width: 16px; height: 16px; margin-top: 3px; flex-shrink: 0; color: var(--gain); }
+.fh .plan.feat li svg { color: #9ff0cf; }
+.fh .plan .btn { width: 100%; }
+.fh .note { margin-top: 18px; text-align: center; font-size: 13.5px; color: var(--muted); }
+
+/* ─── faq ─── */
+.fh .faq { display: grid; grid-template-columns: .85fr 1.15fr; gap: clamp(32px, 6vw, 90px); align-items: start; }
+.fh .faq-side { position: sticky; top: 110px; }
+.fh .faq-side p { margin-top: 16px; color: var(--ink-2); }
+.fh .faq-side a { color: var(--accent); font-weight: 600; }
+.fh .faq-list details { border-bottom: 1px solid var(--line); }
+.fh .faq-list details:first-child { border-top: 1px solid var(--line); }
+.fh .faq-list summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 20px; align-items: center; padding: 22px 0; font-size: 17.5px; font-weight: 600; letter-spacing: -0.01em; }
+.fh .faq-list summary::-webkit-details-marker { display: none; }
+.fh .faq-list summary .pm { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); position: relative; transition: transform .4s var(--ease), background .25s, color .25s; }
+.fh .faq-list summary .pm::before,
+.fh .faq-list summary .pm::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 1.6px; background: currentColor; translate: -50% -50%; }
+.fh .faq-list summary .pm::after { rotate: 90deg; }
+.fh .faq-list details[open] .pm { transform: rotate(45deg); background: var(--ink); color: #fff; border-color: var(--ink); }
+.fh .faq-list details p { padding: 0 44px 22px 0; color: var(--ink-2); }
+
+/* ─── closing + footer ─── */
+.fh .closing { position: relative; overflow: hidden; border-radius: clamp(26px, 4vw, 44px); margin-inline: clamp(8px, 2vw, 24px); color: #fff; text-align: center; padding: clamp(80px, 10vw, 130px) 20px; background:
+  radial-gradient(ellipse 50% 60% at 20% 100%, rgba(240,164,58,.35), transparent 70%),
+  linear-gradient(160deg, var(--sky-1), #2d33a8); }
+.fh .closing h2 { font-size: clamp(40px, 6.4vw, 84px); max-width: 900px; margin-inline: auto; }
+.fh .closing p { margin: 18px auto 0; max-width: 520px; color: rgba(255,255,255,.85); font-size: 18px; }
+.fh .closing .hero-cta { margin-top: 32px; }
+.fh .drift { position: absolute; border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 600; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.3); animation: fh-drift 9s ease-in-out infinite; pointer-events: none; }
+@keyframes fh-drift { 50% { transform: translateY(-14px) rotate(2deg); } }
+.fh footer { padding: 72px 0 32px; }
+.fh .foot { display: grid; grid-template-columns: 1.5fr repeat(3, 1fr); gap: 32px; }
+.fh .foot p { margin-top: 12px; font-size: 14px; color: var(--muted); max-width: 280px; }
+.fh .foot h3 { margin: 0 0 12px; font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.fh .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.fh .foot li a { display: inline-block; padding: 5px 0; font-size: 15px; }
+.fh .foot li a:hover { color: var(--accent); }
+.fh .foot-bar { margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--muted); }
+
+/* reveal */
+.fh.fh-js .rv { opacity: 0; transform: translateY(22px); transition: opacity .9s var(--ease), transform .9s var(--ease); transition-delay: var(--d, 0s); }
+.fh.fh-js .rv.in { opacity: 1; transform: none; }
+
+/* ─── responsive ─── */
+@media (max-width: 1080px) {
+  .fh .links,
+.fh .nav-end .signin,
+.fh .nav-end .btn { display: none; }
+  .fh .burger { display: inline-flex; }
+  .fh .f1 { left: 2%; } .fh .f2 { right: 2%; } .fh .f3 { display: none; }
+  .fh .ask { grid-template-columns: minmax(0, 1fr); }
+  .fh .qs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .fh .orbit-sec,
+.fh .pcard,
+.fh .faq { grid-template-columns: minmax(0, 1fr); }
+  .fh .faq-side { position: static; }
+  .fh .promises { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fh .plans { grid-template-columns: minmax(0, 1fr); max-width: 480px; margin-inline: auto; }
+  .fh .foot { grid-template-columns: 1fr 1fr; }
+  .fh .foot > div:first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 680px) {
+  .fh .hero { padding-top: 112px; }
+  .fh .stage { height: 420px; }
+  .fh .phone { transform: scale(.86); transform-origin: top center; }
+  .fh .float { width: 180px; padding: 11px 13px; }
+  .fh .float .v { font-size: 18px; }
+  .fh .f1 { left: -10px; top: 250px; } .fh .f2 { right: -10px; top: 300px; }
+  .fh .qs { grid-template-columns: minmax(0, 1fr); }
+  .fh .promises { grid-template-columns: minmax(0, 1fr); }
+  .fh .hero-cta .btn { flex: 1 1 100%; }
+  .fh .faq-list details p { padding-right: 0; }
+  .fh .orbit-sec { overflow-x: clip; }
+  .fh .orbit { max-width: 280px; margin-block: 24px; }
+  .fh .orbit .node span { font-size: 11.5px; padding: 5px 10px; }
+  .fh .drift { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fh *,
+.fh *::before,
+.fh *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .fh.fh-js .rv { opacity: 1; transform: none; }
+}
+

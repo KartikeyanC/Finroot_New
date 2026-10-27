@@ -58,7 +58,9 @@ const TripsPage = lazy(() => import("./pages/Trips.tsx"));
 const TrackersPage = lazy(() => import("./pages/Trackers.tsx"));
 const Auth = lazy(() => import("./pages/Auth.tsx"));
 const AcceptInvite = lazy(() => import("./pages/AcceptInvite.tsx"));
-const Landing = lazy(() => import("./pages/Landing.tsx"));
+// The public home page. The previous dark landing (`pages/Landing.tsx`) is still in the
+// repository, unrouted: swap this import back to restore it.
+const Landing = lazy(() => import("./pages/home/Home.tsx"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 const WorkspaceManage = lazy(() => import("./pages/WorkspaceManage.tsx"));
 const ExportPage = lazy(() => import("./pages/Export.tsx"));

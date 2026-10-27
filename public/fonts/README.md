@@ -16,6 +16,10 @@ LCP page.
 | `space-grotesk-latin-ext.woff2` | Space Grotesk | `wght 300–700` | latin-ext | 19 kB |
 | `ibm-plex-sans-latin.woff2` | IBM Plex Sans | `wght 100–700` | latin | 45 kB |
 | `ibm-plex-sans-latin-ext.woff2` | IBM Plex Sans | `wght 100–700` | latin-ext | 30 kB |
+| `instrument-serif-italic-latin.woff2` | Instrument Serif (italic) | single weight 400 | latin | 22 kB |
+
+Instrument Serif is not preloaded and is fetched only when an accent word of the
+home page (`src/pages/home/`) is on screen.
 
 The `latin-ext` files are gated by `unicode-range`, so a normal visit fetches
 only the two `latin` files (**68 kB total**).
@@ -28,6 +32,8 @@ originals:
 ```
 @fontsource-variable/space-grotesk@5.3.0  files/space-grotesk-{latin,latin-ext}-wght-normal.woff2
 @fontsource-variable/ibm-plex-sans@5.3.0  files/ibm-plex-sans-{latin,latin-ext}-wght-normal.woff2
+Instrument Serif v5 (Google Fonts, fetched 2026-10-27)  fonts.gstatic.com/s/instrumentserif/v5/jizHRFtNs2ka5fXjeivQ4LroWlx-6zAjjH7M.woff2
+  (licence: github.com/Instrument/instrument-serif/OFL.txt)
 ```
 
 The packages are **not** a dependency — they were installed once, the four files
@@ -42,8 +48,8 @@ npm remove @fontsource-variable/space-grotesk @fontsource-variable/ibm-plex-sans
 
 ## Licence
 
-Both families are under the SIL Open Font License 1.1 — see
-`LICENSE-space-grotesk.txt` and `LICENSE-ibm-plex-sans.txt`, which the OFL
+All three families are under the SIL Open Font License 1.1 — see
+`LICENSE-space-grotesk.txt`, `LICENSE-ibm-plex-sans.txt` and `LICENSE-instrument-serif.txt`, which the OFL
 requires to be distributed alongside the fonts. Keep them here; they are served
 as static files but never fetched by the app.
 
