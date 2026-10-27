@@ -22,6 +22,14 @@ export default {
         // to the real body face so it stays honest if someone does reach for it.
         body: ["IBM Plex Sans", "system-ui", "sans-serif"],
       },
+      // Green text gets its own contrast-checked shade (--primary-text in
+      // index.css); bg-primary / border-primary stay on the brand green.
+      textColor: {
+        primary: {
+          DEFAULT: "hsl(var(--primary-text))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

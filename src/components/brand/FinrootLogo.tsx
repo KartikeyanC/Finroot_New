@@ -17,7 +17,7 @@
  * is near-black in `obsidian` and pure white in `light`. So `fill` defaults to
  * `currentColor` — set a text colour on the element or an ancestor. Use
  * `text-primary` on themed app surfaces (it is tuned per theme) and the
- * landing's own `#19B886` on the fixed-dark marketing pages.
+ * landing's own `#0D7A5F` on the fixed-dark marketing pages.
  *
  * The artwork's native colour is `#377861`, which is deliberately not the
  * default here: it is a mid-dark green that goes muddy on a near-black header.

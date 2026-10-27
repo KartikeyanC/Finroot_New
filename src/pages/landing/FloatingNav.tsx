@@ -80,7 +80,7 @@ export default function FloatingNav() {
       <div className={`mx-auto max-w-5xl flex items-center justify-between gap-4 rounded-2xl border px-4 h-14 transition-colors duration-300 ${scrolled ? "border-white/10 bg-[#06070a]/70 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.4)]" : "border-white/[0.06] bg-white/[0.02] backdrop-blur-md"}`}>
         {/*
           The full lockup, tagline included, replacing the old mark-plus-text
-          pair. `#19B886` rather than the artwork's own `#377861`: this bar is
+          pair. `#0D7A5F` rather than the artwork's own `#377861`: this bar is
           near-black, where the brand green measures 3.86:1 and the tagline's
           `#0a3f2a` only 1.69:1. The mask discards both and takes this fill
           instead, putting the whole lockup at about 7.8:1. White was the other
@@ -97,7 +97,7 @@ export default function FloatingNav() {
           click (UI-004).
         */}
         <Link to="/" data-cursor className="flex items-center shrink-0 min-h-[44px]">
-          <BrandLockup size="sm" className="bg-[#19B886]" />
+          <BrandLockup size="sm" className="bg-[#0D7A5F]" />
         </Link>
         {/*
           UI-004 / BUG-053 — every target in this bar sat under the 44 px floor:

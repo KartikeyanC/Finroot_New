@@ -34,7 +34,7 @@ export function GlobalFX() {
       @keyframes fr-marquee { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
       .fr-marquee { animation: fr-marquee 36s linear infinite; will-change: transform; }
       .fr-shimmer {
-        background: linear-gradient(100deg,#f3fbf7 20%,#19B886 38%,#C9A84C 50%,#19B886 62%,#f3fbf7 80%);
+        background: linear-gradient(100deg,#f3fbf7 20%,#0D7A5F 38%,#C9A84C 50%,#0D7A5F 62%,#f3fbf7 80%);
         background-size: 200% auto; -webkit-background-clip: text; background-clip: text;
         -webkit-text-fill-color: transparent; animation: fr-shimmer 5.5s linear infinite;
       }
@@ -128,11 +128,11 @@ export function Preloader({ onDone }: { onDone: () => void }) {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="flex items-center gap-3"
           >
-            <BrandLogo className="h-12 w-auto text-[#19B886]" />
+            <BrandLogo className="h-12 w-auto text-[#0D7A5F]" />
             <span className="text-2xl font-semibold tracking-tight text-white">{appName}</span>
           </motion.div>
           <div className="mt-8 w-56 h-px bg-white/10 overflow-hidden rounded-full">
-            <motion.div className="h-full bg-[#19B886]" style={{ width: `${n}%` }} />
+            <motion.div className="h-full bg-[#0D7A5F]" style={{ width: `${n}%` }} />
           </div>
           <div className="mt-3 font-mono text-xs tracking-[0.3em] text-[#8b9a94]">
             {String(n).padStart(3, "0")} · LOADING WEALTH OS
@@ -173,13 +173,13 @@ export function Cursor() {
   return (
     <>
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[90] rounded-full border border-[#19B886]/70 mix-blend-difference"
+        className="pointer-events-none fixed top-0 left-0 z-[90] rounded-full border border-[#0D7A5F]/70 mix-blend-difference"
         style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
         animate={{ width: active ? 52 : 30, height: active ? 52 : 30, opacity: active ? 1 : 0.7 }}
         transition={{ type: "spring", stiffness: 260, damping: 22 }}
       />
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[90] w-1.5 h-1.5 rounded-full bg-[#19B886]"
+        className="pointer-events-none fixed top-0 left-0 z-[90] w-1.5 h-1.5 rounded-full bg-[#0D7A5F]"
         style={{ x, y, translateX: "-50%", translateY: "-50%" }}
       />
     </>
@@ -193,7 +193,7 @@ export function Aurora() {
   const my = useMotionValue(18);
   const sx = useSpring(mx, { stiffness: 60, damping: 20 });
   const sy = useSpring(my, { stiffness: 60, damping: 20 });
-  const spotlight = useMotionTemplate`radial-gradient(620px 420px at ${sx}% ${sy}%, rgba(25,184,134,0.16), transparent 70%)`;
+  const spotlight = useMotionTemplate`radial-gradient(620px 420px at ${sx}% ${sy}%, rgba(13,122,95,0.16), transparent 70%)`;
 
   useEffect(() => {
     if (reduce) return;
@@ -209,7 +209,7 @@ export function Aurora() {
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#06070a]">
       {/* animated mesh blobs */}
       <div className="absolute -top-1/3 left-[8%] w-[55vw] h-[55vw] rounded-full opacity-60 fr-blobA"
-        style={{ background: "radial-gradient(circle, rgba(25,184,134,0.20), transparent 62%)", filter: "blur(60px)", animation: reduce ? undefined : "fr-blobA 16s ease-in-out infinite" }} />
+        style={{ background: "radial-gradient(circle, rgba(13,122,95,0.20), transparent 62%)", filter: "blur(60px)", animation: reduce ? undefined : "fr-blobA 16s ease-in-out infinite" }} />
       <div className="absolute top-[20%] right-[2%] w-[48vw] h-[48vw] rounded-full opacity-50"
         style={{ background: "radial-gradient(circle, rgba(45,125,210,0.16), transparent 60%)", filter: "blur(70px)", animation: reduce ? undefined : "fr-blobB 20s ease-in-out infinite" }} />
       <div className="absolute bottom-[-20%] left-[30%] w-[50vw] h-[50vw] rounded-full opacity-40"

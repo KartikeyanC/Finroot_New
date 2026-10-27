@@ -22,7 +22,7 @@ export default function TermsOfService() {
       <Section id="agreement" heading="1. The agreement">
         <p>
           By creating an account you agree to these terms and to the{" "}
-          <Link to="/privacy" className="text-[#19B886] hover:underline">Privacy Policy</Link>. If you
+          <Link to="/privacy" className="text-[#13B98F] hover:underline">Privacy Policy</Link>. If you
           do not agree, please do not use FinRoot.
         </p>
         <p>
@@ -62,7 +62,7 @@ export default function TermsOfService() {
         </p>
         <p>
           You can export your records at any time, and you can ask us to delete your account. See the{" "}
-          <Link to="/privacy" className="text-[#19B886] hover:underline">Privacy Policy</Link> for how.
+          <Link to="/privacy" className="text-[#13B98F] hover:underline">Privacy Policy</Link> for how.
         </p>
       </Section>
 
@@ -147,7 +147,7 @@ export default function TermsOfService() {
         </p>
         <p>
           Questions about these terms:{" "}
-          <a className="text-[#19B886] hover:underline" href={`mailto:${PRIVACY_CONTACT}`}>{PRIVACY_CONTACT}</a>.
+          <a className="text-[#13B98F] hover:underline" href={`mailto:${PRIVACY_CONTACT}`}>{PRIVACY_CONTACT}</a>.
         </p>
       </Section>
     </LegalLayout>

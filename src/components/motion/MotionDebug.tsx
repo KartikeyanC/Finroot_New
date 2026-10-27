@@ -17,7 +17,7 @@ export function MotionDebug() {
   useEffect(() => {
     if (!motionDebugEnabled()) return;
 
-    console.groupCollapsed("%c[motion] registry", "color:#19B886;font-weight:600");
+    console.groupCollapsed("%c[motion] registry", "color:#0D7A5F;font-weight:600");
     console.table(ALL_ENTRIES);
     console.groupEnd();
 
@@ -27,14 +27,14 @@ export function MotionDebug() {
       [data-motion], [data-cursor],
       .fr-shimmer,
       [class*="marquee"] {
-        outline: 1px dashed rgba(25,184,134,0.55) !important;
+        outline: 1px dashed rgba(13,122,95,0.55) !important;
         outline-offset: 2px;
       }
       body::after {
         content: "motion-debug";
         position: fixed; left: 8px; bottom: 8px; z-index: 99999;
         font: 600 10px/1 ui-monospace, monospace; letter-spacing: .12em;
-        color: #04130d; background: #19B886; padding: 4px 7px; border-radius: 3px;
+        color: #fff; background: #0D7A5F; padding: 4px 7px; border-radius: 3px;
         pointer-events: none;
       }
     `;

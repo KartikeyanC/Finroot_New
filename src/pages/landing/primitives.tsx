@@ -75,7 +75,7 @@ export function Magnetic({ children, className, strength = 0.3 }: { children: Re
 export function SpotlightCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(-200); const my = useMotionValue(-200);
-  const bg = useMotionTemplate`radial-gradient(260px circle at ${mx}px ${my}px, rgba(25,184,134,0.12), transparent 75%)`;
+  const bg = useMotionTemplate`radial-gradient(260px circle at ${mx}px ${my}px, rgba(13,122,95,0.12), transparent 75%)`;
   return (
     <div
       ref={ref}

@@ -5,18 +5,18 @@
 
 /* Layout: centred hero over a periwinkle sky, then alternating white and mist bands; the "Ask your buckets" tool is the page's centrepiece. */
 .fh {
-  --sky-1: #4f57de;
-  --sky-2: #7d86f2;
-  --sky-3: #c9cffd;
+  --sky-1: #0D7A5F;
+  --sky-2: #4FA88F;
+  --sky-3: #BFE3D7;
   --ink: #11142b;
   --ink-2: #3a3f5c;
   --muted: #646a86;
   --line: #e4e6f1;
   --mist: #f5f6fb;
   --white: #ffffff;
-  --accent: #4f57de;
-  --accent-soft: #eceeff;
-  --gain: #0e8f67;
+  --accent: #0D7A5F;
+  --accent-soft: #E3F3EE;
+  --gain: #0D7A5F;
   --gain-soft: #e1f5ee;
   --warn: #b5651d;
   --warn-soft: #fdf0e1;

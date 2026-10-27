@@ -82,7 +82,7 @@ export function motionDebugEnabled(): boolean {
 /** No-op unless ?motionDebug=true. Safe to leave in shipped components. */
 export function logMotion(name: string, detail?: Record<string, unknown>): void {
   if (!motionDebugEnabled()) return;
-  console.log(`%c[motion] ${name}`, "color:#19B886", detail ?? "");
+  console.log(`%c[motion] ${name}`, "color:#0D7A5F", detail ?? "");
 }
 
 /* ── animation intensity ─────────────────────────────────────────── */

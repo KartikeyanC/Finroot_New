@@ -78,19 +78,19 @@ const Landing = () => {
        2.7:1. It went unnoticed for so long because the theme is stored per
        device and defaults to obsidian, so you only ever saw it if you switched
        to light and then went back to the landing page. */
-    <div className="relative min-h-screen bg-[#06070a] text-[#c9cfcc] font-['IBM_Plex_Sans'] antialiased selection:bg-[#19B886]/30 selection:text-white">
+    <div className="relative min-h-screen bg-[#06070a] text-[#c9cfcc] font-['IBM_Plex_Sans'] antialiased selection:bg-[#0D7A5F]/30 selection:text-white">
       <GlobalFX />
       <Aurora />
       <Cursor />
       <Preloader onDone={() => setReady(true)} />
 
       {!reduce && (
-        <motion.div className="fixed top-0 left-0 right-0 h-0.5 origin-left bg-gradient-to-r from-[#19B886] via-[#C9A84C] to-[#19B886] z-[60]" style={{ scaleX: progress }} />
+        <motion.div className="fixed top-0 left-0 right-0 h-0.5 origin-left bg-gradient-to-r from-[#0D7A5F] via-[#C9A84C] to-[#0D7A5F] z-[60]" style={{ scaleX: progress }} />
       )}
 
       {/* Stage 4.8 / BUG-052 — skip past the nav straight to the content.
           Shared since BUG-093: two later pages never got their own copy. */}
-      <SkipLink target="landing-main" className="focus:bg-[#19B886] focus:text-[#04120d] focus:ring-white/70" />
+      <SkipLink target="landing-main" className="focus:bg-[#0D7A5F] focus:text-[#04120d] focus:ring-white/70" />
 
       <FloatingNav />
 
@@ -139,7 +139,7 @@ const Landing = () => {
           <motion.div style={{ y: showcaseY, opacity: showcaseOpacity }}
             initial={{ opacity: 0, scale: 0.96 }} animate={ready ? { opacity: 1, scale: 1 } : {}} transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="relative">
-            <div className="absolute -inset-6 rounded-3xl bg-[#19B886]/10 blur-3xl -z-10" />
+            <div className="absolute -inset-6 rounded-3xl bg-[#0D7A5F]/10 blur-3xl -z-10" />
             {/*
               Stage 4.7 / BUG-053 — the audit counted "121 text nodes under
               12 px" here. Almost all of them are inside this decorative
@@ -174,7 +174,7 @@ const Landing = () => {
               {/* repeat the set so a single group always exceeds the viewport → seamless loop with no gap */}
               {Array.from({ length: 3 }).flatMap((_, r) =>
                 MARQUEE.map((t, ti) => (
-                  <span key={`${r}-${ti}`} className="inline-flex items-center gap-2.5"><span className="w-1 h-1 rounded-full bg-[#19B886]" /> {t}</span>
+                  <span key={`${r}-${ti}`} className="inline-flex items-center gap-2.5"><span className="w-1 h-1 rounded-full bg-[#0D7A5F]" /> {t}</span>
                 )),
               )}
             </div>
@@ -198,13 +198,13 @@ const Landing = () => {
         <div className="grid md:grid-cols-6 gap-3">
           {FEATURES.map((f, i) => (
             <Reveal key={f.title} i={i % 3} className={f.span}>
-              <SpotlightCard className="h-full p-7 hover:border-[#19B886]/40 transition-colors">
-                <div className="w-11 h-11 rounded-xl bg-[#19B886]/10 border border-[#19B886]/25 flex items-center justify-center mb-5">
-                  <f.icon className="w-5 h-5 text-[#19B886]" />
+              <SpotlightCard className="h-full p-7 hover:border-[#0D7A5F]/40 transition-colors">
+                <div className="w-11 h-11 rounded-xl bg-[#0D7A5F]/10 border border-[#0D7A5F]/25 flex items-center justify-center mb-5">
+                  <f.icon className="w-5 h-5 text-[#13B98F]" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2 text-white">{f.title}</h3>
                 <p className="text-sm text-[#9aa3a0] leading-relaxed">{f.body}</p>
-                <ArrowUpRight className="absolute top-7 right-7 w-4 h-4 text-white/15 group-hover:text-[#19B886] group-hover:rotate-12 transition-all" />
+                <ArrowUpRight className="absolute top-7 right-7 w-4 h-4 text-white/15 group-hover:text-[#13B98F] group-hover:rotate-12 transition-all" />
               </SpotlightCard>
             </Reveal>
           ))}
@@ -225,15 +225,15 @@ const Landing = () => {
         <div className="relative">
           {/* progress rail (desktop) */}
           <div className="hidden md:block absolute top-7 left-[16.66%] right-[16.66%] h-px bg-white/10">
-            <motion.div className="h-full origin-left bg-gradient-to-r from-[#19B886] to-[#C9A84C]" style={{ scaleX: wfLine }} />
+            <motion.div className="h-full origin-left bg-gradient-to-r from-[#0D7A5F] to-[#C9A84C]" style={{ scaleX: wfLine }} />
           </div>
           <div className="grid md:grid-cols-3 gap-3 md:gap-8">
             {WORKFLOW.map((s, i) => (
               <Reveal key={s.n} i={i}>
                 <div className="relative">
-                  <div className="hidden md:block mx-auto mb-7 w-3.5 h-3.5 rounded-full bg-[#19B886] shadow-[0_0_16px_rgba(25,184,134,0.9)] relative z-10" />
-                  <SpotlightCard className="p-8 h-full hover:border-[#19B886]/40 transition-colors">
-                    <div className="font-mono text-4xl text-[#19B886]/40 mb-6">{s.n}</div>
+                  <div className="hidden md:block mx-auto mb-7 w-3.5 h-3.5 rounded-full bg-[#0D7A5F] shadow-[0_0_16px_rgba(13,122,95,0.9)] relative z-10" />
+                  <SpotlightCard className="p-8 h-full hover:border-[#0D7A5F]/40 transition-colors">
+                    <div className="font-mono text-4xl text-[#13B98F]/40 mb-6">{s.n}</div>
                     <h3 className="text-2xl font-semibold mb-3 text-white">{s.t}</h3>
                     <p className="text-sm text-[#9aa3a0] leading-relaxed">{s.d}</p>
                   </SpotlightCard>
@@ -269,9 +269,9 @@ const Landing = () => {
           {pricing.cards.map((p, i) => (
             <Reveal key={`${p.name}-${i}`} i={i}>
               <motion.div whileHover={reduce ? undefined : { y: -6 }} transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                className={`relative h-full ${card} p-8 ${p.highlight ? "border-[#19B886]/40 bg-[#19B886]/[0.06] shadow-[0_0_60px_-15px_rgba(25,184,134,0.5)]" : ""}`}>
+                className={`relative h-full ${card} p-8 ${p.highlight ? "border-[#0D7A5F]/40 bg-[#0D7A5F]/[0.06] shadow-[0_0_60px_-15px_rgba(13,122,95,0.5)]" : ""}`}>
                 {/* BUG-053: text-[11px] was 1px under the 12px floor */}
-                {p.badge && <div className="absolute -top-3 left-8 px-3 py-1 rounded-md bg-[#19B886] text-[#04130d] text-xs uppercase tracking-[0.15em] font-semibold">{p.badge}</div>}
+                {p.badge && <div className="absolute -top-3 left-8 px-3 py-1 rounded-md bg-[#0D7A5F] text-white text-xs uppercase tracking-[0.15em] font-semibold">{p.badge}</div>}
                 <div className="text-sm text-[#9aa3a0] mb-2">{p.name}</div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-5xl font-semibold text-white">{p.price}</span>
@@ -280,7 +280,7 @@ const Landing = () => {
                 <p className="text-sm text-[#9aa3a0] mt-3 mb-7">{p.blurb}</p>
                 <ul className="space-y-2.5 mb-8">
                   {p.features.map((f, fi) => (
-                    <li key={`${f}-${fi}`} className="flex items-start gap-2.5 text-sm text-[#c9cfcc]"><Check className="w-4 h-4 text-[#19B886] mt-0.5 flex-shrink-0" />{f}</li>
+                    <li key={`${f}-${fi}`} className="flex items-start gap-2.5 text-sm text-[#c9cfcc]"><Check className="w-4 h-4 text-[#13B98F] mt-0.5 flex-shrink-0" />{f}</li>
                   ))}
                 </ul>
                 <Link to={p.ctaHref || "/auth"} data-cursor className="block">
@@ -313,7 +313,7 @@ const Landing = () => {
             WebkitMaskImage: "radial-gradient(ellipse 70% 90% at 50% 0%, #000, transparent 75%)",
           }} />
           <motion.div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full"
-            style={{ background: "radial-gradient(ellipse at center, rgba(25,184,134,0.28), transparent 70%)", filter: "blur(40px)" }}
+            style={{ background: "radial-gradient(ellipse at center, rgba(13,122,95,0.28), transparent 70%)", filter: "blur(40px)" }}
             animate={reduce ? undefined : { opacity: [0.6, 1, 0.6] }} transition={reduce ? undefined : { duration: 7, repeat: Infinity, ease: "easeInOut" }} />
           <div className="relative">
             <span className={`inline-flex items-center gap-1.5 ${eyebrow} mb-5`}><Sparkles className="w-3.5 h-3.5" /> Two minutes to set up</span>
@@ -338,7 +338,7 @@ const Landing = () => {
         <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <BrandLogo className="h-7 w-auto text-[#19B886]" />
+              <BrandLogo className="h-7 w-auto text-[#0D7A5F]" />
               <span className="text-lg font-semibold text-white">{brand.appName}</span>
             </div>
             <p className="text-xs text-[#8b9a94] leading-relaxed">{brand.tagline}</p>

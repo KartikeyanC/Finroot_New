@@ -15,5 +15,5 @@ export const card = "rounded-2xl border border-white/10 bg-white/[0.025]";
 // BUG-053 — was text-[11px], 1px under the WCAG-conventional 12px floor for
 // real (non-decorative) body text. Every section eyebrow on the page uses
 // this one token, so the fix lands everywhere at once.
-export const eyebrow = "text-xs uppercase tracking-[0.22em] text-[#19B886] font-medium";
-export const CTA_PRIMARY = "bg-[#19B886] hover:bg-[#3ad0a3] text-[#04130d] font-semibold rounded-xl";
+export const eyebrow = "text-xs uppercase tracking-[0.22em] text-[#13B98F] font-medium";
+export const CTA_PRIMARY = "bg-[#0D7A5F] hover:bg-[#12A07D] text-white font-semibold rounded-xl";

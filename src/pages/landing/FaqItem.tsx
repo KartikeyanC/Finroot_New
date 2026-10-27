@@ -12,7 +12,7 @@ export default function FaqItem({ q, a }: { q: string; a: string }) {
     <div className="py-1">
       <button onClick={() => setOpen((o) => !o)} data-cursor aria-expanded={open} aria-controls={`${id}-a`} className="w-full flex items-center justify-between gap-6 py-5 text-left">
         <span className="text-lg font-medium text-white">{q}</span>
-        <ChevronDown aria-hidden="true" className={`w-4 h-4 text-[#19B886] shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown aria-hidden="true" className={`w-4 h-4 text-[#13B98F] shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
       </button>
       <AnimatePresence initial={false}>
         {open && (

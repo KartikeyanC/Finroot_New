@@ -26,8 +26,8 @@ export const NAV = [
 
 /** The app's own seven buckets, with one example month of ₹1,20,000. */
 export const BUCKETS = [
-  { name: "Needs", color: "#4f57de", amt: 52000, used: 37000, purpose: "Rent, food, transport, health — whatever keeps the month running." },
-  { name: "Financial Freedom", color: "#0e8f67", amt: 18000, used: 7200, purpose: "Money set aside to buy your independence, one month at a time." },
+  { name: "Needs", color: "#0D7A5F", amt: 52000, used: 37000, purpose: "Rent, food, transport, health — whatever keeps the month running." },
+  { name: "Financial Freedom", color: "#5FB89E", amt: 18000, used: 7200, purpose: "Money set aside to buy your independence, one month at a time." },
   { name: "Education", color: "#3d8fd6", amt: 8000, used: 4400, purpose: "Courses, fees, books — learning as a line, not a leftover." },
   { name: "Play", color: "#e0598b", amt: 12000, used: 5600, purpose: "Spend it without guilt. It was planned for." },
   { name: "Long-Term Savings", color: "#8a63d2", amt: 14000, used: 4200, purpose: "The slow money: the house, the retirement, the rainy decade." },
@@ -46,11 +46,11 @@ export const TRUST_STRIP: { icon: LucideIcon; text: string }[] = [
 ];
 
 export const ORBIT_OUTER: [string, string][] = [
-  ["Typed entries", "#4f57de"], ["Bank statement", "#3d8fd6"], ["Bill scan", "#e0598b"],
-  ["5 currencies", "#0e8f67"], ["Goals", "#8a63d2"], ["Insurance", "#f0a43a"],
+  ["Typed entries", "#0D7A5F"], ["Bank statement", "#3d8fd6"], ["Bill scan", "#e0598b"],
+  ["5 currencies", "#5FB89E"], ["Goals", "#8a63d2"], ["Insurance", "#f0a43a"],
 ];
 export const ORBIT_INNER: [string, string][] = [
-  ["Partner", "#0e8f67"], ["Parents", "#f0a43a"], ["Advisor · view only", "#8a63d2"],
+  ["Partner", "#5FB89E"], ["Parents", "#f0a43a"], ["Advisor · view only", "#8a63d2"],
 ];
 
 export const LEDGER_FACTS: { icon: LucideIcon; title: string; body: string }[] = [

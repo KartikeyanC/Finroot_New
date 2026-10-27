@@ -70,7 +70,7 @@ export default function Voices() {
             onDragEnd={onDragEnd}
             className={`absolute inset-0 ${card} p-8 sm:p-10 flex flex-col justify-center text-center cursor-grab active:cursor-grabbing`}
           >
-            <div className="text-xs uppercase tracking-[0.18em] text-[#19B886] font-medium">{t.who}</div>
+            <div className="text-xs uppercase tracking-[0.18em] text-[#13B98F] font-medium">{t.who}</div>
             <p className="mt-4 text-xl sm:text-2xl font-medium leading-snug text-white">{t.need}</p>
             <p className="mt-4 text-sm sm:text-[15px] text-[#9aa3a0] leading-relaxed max-w-xl mx-auto">
               <span className="text-[#c9cfcc]">With FinRoot: </span>{t.use}
@@ -99,7 +99,7 @@ export default function Voices() {
         {HOUSEHOLDS.map((_, k) => (
           <button key={k} data-cursor aria-label={`Example household ${k + 1} of ${HOUSEHOLDS.length}`} aria-current={k === i ? "true" : undefined}
             onClick={() => { setDir(k > i ? 1 : -1); setI(k); }}
-            className={`relative h-1.5 rounded-full transition-all duration-300 before:absolute before:-inset-[9px] before:content-[''] ${k === i ? "w-8 bg-[#19B886]" : "w-1.5 bg-white/20 hover:bg-white/40"}`} />
+            className={`relative h-1.5 rounded-full transition-all duration-300 before:absolute before:-inset-[9px] before:content-[''] ${k === i ? "w-8 bg-[#0D7A5F]" : "w-1.5 bg-white/20 hover:bg-white/40"}`} />
         ))}
       </div>
     </div>

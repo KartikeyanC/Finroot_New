@@ -9,7 +9,7 @@ export function CosmicBackground() {
       {/* animated mesh blobs */}
       <div
         className="absolute -top-1/3 left-[6%] w-[55vw] h-[55vw] rounded-full opacity-50"
-        style={{ background: "radial-gradient(circle, rgba(25,184,134,0.20), transparent 62%)", filter: "blur(70px)", animation: "fr-blobA 18s ease-in-out infinite" }}
+        style={{ background: "radial-gradient(circle, rgba(13,122,95,0.20), transparent 62%)", filter: "blur(70px)", animation: "fr-blobA 18s ease-in-out infinite" }}
       />
       <div
         className="absolute top-[18%] right-0 w-[48vw] h-[48vw] rounded-full opacity-45"

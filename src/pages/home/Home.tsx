@@ -52,7 +52,7 @@ export default function Home() {
 
   return (
     <div className="fh fh-js" ref={root}>
-      <SkipLink target="landing-main" className="focus:bg-[#4f57de] focus:text-white focus:ring-white/70" />
+      <SkipLink target="landing-main" className="focus:bg-[#0D7A5F] focus:text-white focus:ring-white/70" />
       <HomeNav heroRef={hero} />
       <main id="landing-main" tabIndex={-1}>
         <HomeHero ref={hero} />

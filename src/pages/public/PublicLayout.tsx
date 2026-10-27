@@ -37,7 +37,7 @@ export default function PublicLayout({
       <header className="border-b border-white/10">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5">
-            <BrandLogo className="h-9 w-auto text-[#19B886]" />
+            <BrandLogo className="h-9 w-auto text-[#0D7A5F]" />
             <span className="text-base font-semibold tracking-tight text-white">{appName}</span>
           </Link>
           <Link
@@ -50,7 +50,7 @@ export default function PublicLayout({
       </header>
 
       <main id="public-main" tabIndex={-1} className="max-w-3xl mx-auto px-6 py-12">
-        <p className="text-[11px] uppercase tracking-[0.22em] text-[#19B886] font-medium">{eyebrow}</p>
+        <p className="text-[11px] uppercase tracking-[0.22em] text-[#13B98F] font-medium">{eyebrow}</p>
         <h1 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-white">{title}</h1>
         <p className="mt-4 text-[#9aa3a0] leading-relaxed">{summary}</p>
         {meta && <div className="mt-4 text-xs text-[#8b9a94]">{meta}</div>}

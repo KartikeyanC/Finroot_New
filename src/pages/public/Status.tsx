@@ -122,7 +122,7 @@ export default function Status() {
           They also cannot see everything. A problem that affects only signed-in requests, or only
           one workspace, will show green here. If something is wrong and this page disagrees, trust
           yourself and{" "}
-          <Link to="/support" className="text-[#19B886] hover:underline">tell us</Link> — that is
+          <Link to="/support" className="text-[#13B98F] hover:underline">tell us</Link> — that is
           more useful to us than a green tick.
         </p>
       </Section>
@@ -141,7 +141,7 @@ export default function Status() {
           <p>
             Nothing is being reported. When something is wrong that these checks cannot see, a note
             appears here — and if it is affecting you and there is no note, write to{" "}
-            <a className="text-[#19B886] hover:underline" href={`mailto:${SUPPORT_EMAIL}`}>
+            <a className="text-[#13B98F] hover:underline" href={`mailto:${SUPPORT_EMAIL}`}>
               {SUPPORT_EMAIL}
             </a>
             .

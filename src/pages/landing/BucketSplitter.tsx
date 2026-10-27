@@ -34,7 +34,7 @@ export default function BucketSplitter() {
           <p className="text-[#9aa3a0] leading-relaxed mb-8">Type a monthly income and pick an example split. In the app you set your own percentages, and every expense lands in the right bucket by category.</p>
 
           <label htmlFor={inputId} className="block text-sm text-[#9aa3a0] mb-2">Monthly income</label>
-          <div className="flex items-baseline gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-4 focus-within:border-[#19B886] transition-colors">
+          <div className="flex items-baseline gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-4 focus-within:border-[#0D7A5F] transition-colors">
             <span className="text-2xl text-[#8b9a94]" aria-hidden="true">₹</span>
             <input
               id={inputId}
@@ -55,7 +55,7 @@ export default function BucketSplitter() {
                 data-cursor
                 aria-pressed={s.id === splitId}
                 onClick={() => setSplitId(s.id)}
-                className={`min-h-[44px] px-4 rounded-xl text-sm border transition-colors ${s.id === splitId ? "bg-[#19B886] border-[#19B886] text-[#04130d] font-semibold" : "border-white/15 text-[#c9cfcc] hover:bg-white/5"}`}
+                className={`min-h-[44px] px-4 rounded-xl text-sm border transition-colors ${s.id === splitId ? "bg-[#0D7A5F] border-[#0D7A5F] text-white font-semibold" : "border-white/15 text-[#c9cfcc] hover:bg-white/5"}`}
               >
                 {s.label}
               </button>

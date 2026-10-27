@@ -29,8 +29,8 @@ export default function Privacy() {
           <li key={p.title}>
             <Reveal i={i % 3} className="h-full">
               <div className="h-full rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#19B886]/25 bg-[#19B886]/10 mb-4" aria-hidden="true">
-                  <p.icon className="w-5 h-5 text-[#19B886]" />
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#0D7A5F]/25 bg-[#0D7A5F]/10 mb-4" aria-hidden="true">
+                  <p.icon className="w-5 h-5 text-[#13B98F]" />
                 </span>
                 <h3 className="text-lg font-semibold text-white">{p.title}</h3>
                 <p className="mt-1.5 text-sm text-[#9aa3a0] leading-relaxed">{p.body}</p>

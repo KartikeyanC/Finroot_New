@@ -35,7 +35,7 @@ export default function PrivacyPolicy() {
         <p>
           FinRoot is a personal finance tracker operated from India. For any question about this
           policy, or to exercise the rights described below, write to{" "}
-          <a className="text-[#19B886] hover:underline" href={`mailto:${PRIVACY_CONTACT}`}>{PRIVACY_CONTACT}</a>.
+          <a className="text-[#13B98F] hover:underline" href={`mailto:${PRIVACY_CONTACT}`}>{PRIVACY_CONTACT}</a>.
         </p>
         <p className="text-[#8b9a94]">
           The legal entity name, registered address and grievance officer required by India's Digital
@@ -155,7 +155,7 @@ export default function PrivacyPolicy() {
         </p>
         <p>
           No system is perfect. If you believe you have found a security problem, please write to{" "}
-          <a className="text-[#19B886] hover:underline" href={`mailto:${PRIVACY_CONTACT}`}>{PRIVACY_CONTACT}</a>{" "}
+          <a className="text-[#13B98F] hover:underline" href={`mailto:${PRIVACY_CONTACT}`}>{PRIVACY_CONTACT}</a>{" "}
           before disclosing it publicly.
         </p>
       </Section>
@@ -170,7 +170,7 @@ export default function PrivacyPolicy() {
         <p>
           To ask for a copy of everything we hold, or for your account and its data to be deleted,
           write to{" "}
-          <a className="text-[#19B886] hover:underline" href={`mailto:${PRIVACY_CONTACT}`}>{PRIVACY_CONTACT}</a>.
+          <a className="text-[#13B98F] hover:underline" href={`mailto:${PRIVACY_CONTACT}`}>{PRIVACY_CONTACT}</a>.
           We will confirm your identity, act within 30 days, and tell you when it is done.
           Settings &rarr; Delete your account explains exactly what is removed and composes that
           request for you. The last steps are done by a person, which is why it is email rather than
@@ -192,7 +192,7 @@ export default function PrivacyPolicy() {
         <p>
           When this policy changes materially we will update the version and effective date at the
           top and tell you in the product before the change takes effect. The{" "}
-          <Link to="/terms" className="text-[#19B886] hover:underline">Terms of Service</Link> cover
+          <Link to="/terms" className="text-[#13B98F] hover:underline">Terms of Service</Link> cover
           the rest of the relationship.
         </p>
       </Section>

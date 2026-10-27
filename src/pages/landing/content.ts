@@ -51,7 +51,7 @@ export const WHO = [
 
 /** The app's own seven buckets (`BUDGET_BUCKETS`), with one-line purposes from the brief. */
 export const BUCKETS = [
-  { name: "Needs", purpose: "Rent, food, transport, health — whatever keeps the month running.", color: "#19B886" },
+  { name: "Needs", purpose: "Rent, food, transport, health — whatever keeps the month running.", color: "#0D7A5F" },
   { name: "Financial Freedom", purpose: "Money set aside to buy your independence, one month at a time.", color: "#C9A84C" },
   { name: "Education", purpose: "Courses, fees, books — learning as a line, not a leftover.", color: "#6aa7e8" },
   { name: "Play", purpose: "Spend it without guilt. It was planned for.", color: "#e07a9a" },

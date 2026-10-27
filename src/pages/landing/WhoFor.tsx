@@ -26,15 +26,15 @@ export default function WhoFor() {
                 href={w.href}
                 data-cursor
                 className={`group flex h-full flex-col gap-2 rounded-2xl border p-6 transition-colors ${w.main
-                  ? "border-[#19B886]/40 bg-[#19B886]/[0.08] hover:border-[#19B886]/70"
+                  ? "border-[#0D7A5F]/40 bg-[#0D7A5F]/[0.08] hover:border-[#0D7A5F]/70"
                   : "border-white/10 bg-white/[0.025] hover:border-white/25"}`}
               >
                 {w.main && (
-                  <span className="self-start mb-1 rounded-md bg-[#19B886] px-2 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#04130d]">
+                  <span className="self-start mb-1 rounded-md bg-[#0D7A5F] px-2 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-white">
                     Designed around you
                   </span>
                 )}
-                <w.icon className="w-5 h-5 text-[#19B886]" aria-hidden="true" />
+                <w.icon className="w-5 h-5 text-[#13B98F]" aria-hidden="true" />
                 <h3 className={`font-semibold text-white ${w.main ? "text-xl" : "text-base"}`}>{w.title}</h3>
                 <p className="text-sm text-[#9aa3a0] leading-relaxed">{w.body}</p>
                 <span className="mt-auto pt-3 inline-flex items-center gap-1.5 text-sm text-[#c9cfcc] group-hover:text-white">

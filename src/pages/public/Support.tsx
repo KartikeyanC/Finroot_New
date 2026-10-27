@@ -50,7 +50,7 @@ export default function Support() {
       <Section id="contact" heading="Email us">
         <p>
           <a
-            className="text-[#19B886] hover:underline text-base font-medium"
+            className="text-[#13B98F] hover:underline text-base font-medium"
             href={supportMailto({ subject: `${appName} support`, context })}
           >
             {SUPPORT_EMAIL}
@@ -62,7 +62,7 @@ export default function Support() {
         </p>
         <a
           href={supportMailto({ subject: `${appName} support`, context })}
-          className="inline-flex items-center gap-2 rounded-lg border border-[#19B886]/40 bg-[#19B886]/10 px-4 py-2.5 text-sm font-medium text-[#19B886] hover:bg-[#19B886]/20 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg border border-[#0D7A5F]/40 bg-[#0D7A5F]/10 px-4 py-2.5 text-sm font-medium text-[#13B98F] hover:bg-[#0D7A5F]/20 transition-colors"
         >
           <Mail className="w-4 h-4" /> Write to support
         </a>
@@ -92,14 +92,14 @@ export default function Support() {
       <Section id="first" heading="Worth checking first">
         <ul className="space-y-2.5">
           <li className="flex gap-2.5">
-            <Activity className="w-4 h-4 mt-0.5 shrink-0 text-[#19B886]" />
+            <Activity className="w-4 h-4 mt-0.5 shrink-0 text-[#13B98F]" />
             <span>
-              <Link to="/status" className="text-[#19B886] hover:underline">Status</Link> — whether
+              <Link to="/status" className="text-[#13B98F] hover:underline">Status</Link> — whether
               it is us or your connection, checked live from your own browser.
             </span>
           </li>
           <li className="flex gap-2.5">
-            <ShieldQuestion className="w-4 h-4 mt-0.5 shrink-0 text-[#19B886]" />
+            <ShieldQuestion className="w-4 h-4 mt-0.5 shrink-0 text-[#13B98F]" />
             <span>
               Locked out of the app? The lock screen has a <strong>Forgot your PIN?</strong> link —
               your account password resets it. The PIN is stored only on your device and nobody can
@@ -107,18 +107,18 @@ export default function Support() {
             </span>
           </li>
           <li className="flex gap-2.5">
-            <FileDown className="w-4 h-4 mt-0.5 shrink-0 text-[#19B886]" />
+            <FileDown className="w-4 h-4 mt-0.5 shrink-0 text-[#13B98F]" />
             <span>
               Want your records out? Settings → Your data exports everything as one file, without
               asking us.
             </span>
           </li>
           <li className="flex gap-2.5">
-            <LifeBuoy className="w-4 h-4 mt-0.5 shrink-0 text-[#19B886]" />
+            <LifeBuoy className="w-4 h-4 mt-0.5 shrink-0 text-[#13B98F]" />
             <span>
               Privacy, deletion or a data-rights request? Same address — say so in the subject and
               it goes to the top of the pile. See the{" "}
-              <Link to="/privacy" className="text-[#19B886] hover:underline">Privacy Policy</Link>.
+              <Link to="/privacy" className="text-[#13B98F] hover:underline">Privacy Policy</Link>.
             </span>
           </li>
         </ul>
