@@ -22,13 +22,20 @@ import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, CURRENCIES } from "@/lib/finance
 import { useCustomCategories } from "@/lib/categories";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 import TrackerField from "@/components/transactions/TrackerField";
+import type { QuickAddPrefill } from "@/hooks/useSharedPayment";
 
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  /**
+   * A payment shared from another app (`useSharedPayment`). Everything in it is
+   * a suggestion the person confirms here — nothing is saved until they press
+   * the button.
+   */
+  prefill?: QuickAddPrefill | null;
 }
 
-export default function QuickAddSheet({ open, onOpenChange }: Props) {
+export default function QuickAddSheet({ open, onOpenChange, prefill }: Props) {
   const createTxn = useCreateTransaction();
   const { store: customCats } = useCustomCategories();
 
@@ -56,22 +63,39 @@ export default function QuickAddSheet({ open, onOpenChange }: Props) {
   ];
   const cats = type === "expense" ? expenseCategories : incomeCategories;
 
-  // Reset & focus when opened
+  // Reset & focus when opened — or open pre-filled from a shared payment.
   useEffect(() => {
-    if (open) {
-      setAmount("");
-      setNote("");
-      setDate(new Date().toISOString().slice(0, 10));
-      setTrackerId("none");
-      setSaved(false);
-      // slight delay so the sheet animation completes before focusing
-      setTimeout(() => amountRef.current?.focus(), 200);
+    if (!open) return;
+    setTrackerId("none");
+    setSaved(false);
+    if (prefill) {
+      setType(prefill.type);
+      setAmount(prefill.amount);
+      setCategory(prefill.category);
+      setNote(prefill.note);
+      setCurrency(prefill.currency);
+      setDate(prefill.date);
+      // A prefilled amount needs confirming, not typing — and focusing a field
+      // on a phone raises the keyboard over the very details being checked.
+      if (!prefill.amount) setTimeout(() => amountRef.current?.focus(), 200);
+      return;
     }
-  }, [open]);
+    setAmount("");
+    setNote("");
+    setDate(new Date().toISOString().slice(0, 10));
+    // slight delay so the sheet animation completes before focusing
+    setTimeout(() => amountRef.current?.focus(), 200);
+  }, [open, prefill]);
 
-  // Keep category in sync when type switches
+  // Keep category in sync when type switches. A category that is valid for the
+  // new type is kept: a shared payment arrives already categorised, and the
+  // type change that brings it in must not wipe that.
   useEffect(() => {
-    setCategory(type === "expense" ? EXPENSE_CATEGORIES[0] : INCOME_CATEGORIES[0]);
+    setCategory((c) => {
+      const valid = (type === "expense" ? expenseCategories : incomeCategories) as string[];
+      return valid.includes(c) ? c : type === "expense" ? EXPENSE_CATEGORIES[0] : INCOME_CATEGORIES[0];
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
   const handleSave = async () => {
@@ -120,7 +144,14 @@ export default function QuickAddSheet({ open, onOpenChange }: Props) {
         </div>
 
         <SheetHeader className="px-5 pt-2 pb-0">
-          <SheetTitle className="text-base font-semibold">Quick Add</SheetTitle>
+          <SheetTitle className="text-base font-semibold">{prefill ? "Confirm payment" : "Quick Add"}</SheetTitle>
+          {prefill && (
+            <p className="text-xs text-muted-foreground pt-1">
+              {prefill.source === "unreadable"
+                ? "We couldn't read an amount from that. Enter it below, then pick a category and save."
+                : "From the payment you shared. Check it's an expense or income, pick the category, then save."}
+            </p>
+          )}
         </SheetHeader>
 
         <div className="px-5 pt-4 pb-6 space-y-4">

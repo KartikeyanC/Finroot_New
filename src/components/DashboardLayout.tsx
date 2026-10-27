@@ -18,6 +18,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useNotifications } from "@/hooks/useNotifications";
 import GlobalSearch from "@/components/GlobalSearch";
 import QuickAddSheet from "@/components/QuickAddSheet";
+import { useSharedPayment, type QuickAddPrefill } from "@/hooks/useSharedPayment";
 import {
   Select,
   SelectContent,
@@ -34,6 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const [searchOpen, setSearchOpen]       = useState(false);
   const [quickAddOpen, setQuickAddOpen]   = useState(false);
+  const [quickAddPrefill, setQuickAddPrefill] = useState<QuickAddPrefill | null>(null);
   const [searchParams, setSearchParams]   = useSearchParams();
 
   // Stage 5.4: with the lock optional, "Lock" has nothing to lock to when it
@@ -89,6 +91,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [searchParams, setSearchParams]);
   const { profiles, viewAsId, setViewAsId, activeProfile } = useAccess();
   const isReadOnly = !!activeProfile && activeProfile.role === "viewer";
+  // A payment shared from GPay/PhonePe/etc. opens Quick Add already filled in.
+  useSharedPayment((p) => { setQuickAddPrefill(p); setQuickAddOpen(true); }, { readOnly: isReadOnly });
   const { data: sub } = useSubscription();
   const subExpired = sub?.status === "expired";
   const { unread } = useNotifications();
@@ -314,7 +318,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </div>
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
-      <QuickAddSheet open={quickAddOpen} onOpenChange={setQuickAddOpen} />
+      <QuickAddSheet
+        open={quickAddOpen}
+        onOpenChange={(v) => { setQuickAddOpen(v); if (!v) setQuickAddPrefill(null); }}
+        prefill={quickAddPrefill}
+      />
     </SidebarProvider>
   );
 }

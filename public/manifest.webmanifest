@@ -13,6 +13,17 @@
   "background_color": "#0B231C",
   "theme_color": "#0B231C",
   "categories": ["finance", "productivity"],
+  "share_target": {
+    "action": "/share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [{ "name": "receipt", "accept": ["image/*"] }]
+    }
+  },
   "shortcuts": [
     {
       "name": "Quick Add Expense",
