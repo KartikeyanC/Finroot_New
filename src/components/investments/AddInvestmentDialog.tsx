@@ -25,6 +25,7 @@ import {
   type InvestmentRecord,
 } from "@/lib/investmentsStore";
 import { useAccounts } from "@/lib/accountsStore";
+import { SymbolPicker } from "./SymbolPicker";
 
 type AssetType =
   | "stocks"
@@ -338,11 +339,13 @@ export default function AddInvestmentDialog({
                 onChange={(e) => set("name", e.target.value)}
               />
             </Field>
-            <Field label="Ticker (Google Finance format)">
-              <Input
-                placeholder="e.g. NSE:RELIANCE, BOM:500325, NASDAQ:AAPL"
+            <Field label="Stock (search by name, or type a ticker)">
+              <SymbolPicker
+                provider="yahoo"
+                placeholder="e.g. Reliance, Apple — or NSE:RELIANCE, NASDAQ:AAPL"
                 value={form.ticker ?? ""}
-                onChange={(e) => set("ticker", e.target.value.toUpperCase())}
+                onChange={(v) => set("ticker", v.toUpperCase())}
+                onPick={(hit) => { if (!form.name) set("name", hit.name); }}
               />
             </Field>
             <div className="grid grid-cols-2 gap-3">
@@ -416,11 +419,13 @@ export default function AddInvestmentDialog({
                 onChange={(e) => set("name", e.target.value)}
               />
             </Field>
-            <Field label="MFAPI Scheme Code (for live NAV)">
-              <Input
-                placeholder="e.g. 122639 — from api.mfapi.in"
+            <Field label="Fund (search by name, or type the MFAPI scheme code)">
+              <SymbolPicker
+                provider="mf"
+                placeholder="e.g. Parag Parikh Flexi Cap — or 122639"
                 value={form.scheme ?? ""}
-                onChange={(e) => set("scheme", e.target.value)}
+                onChange={(v) => set("scheme", v)}
+                onPick={(hit) => { if (!form.name) set("name", hit.name); }}
               />
             </Field>
             <div className="grid grid-cols-2 gap-3">

@@ -89,7 +89,9 @@ docs/adr/             # architecture decision records — why, and what it cost
 docs/runbooks/        # migrate, deploy, delete/restore a workspace, erase an account, rotate keys
 e2e/                  # Playwright: finroot, tap-targets, legal, data-export, onboarding,
                       #            app-lock, lock-suite, ui-a11y, cross-browser, plan-locks,
-                      #            support-status, po-analytics, harness-smoke
+                      #            support-status, po-analytics, harness-smoke,
+                      #            symbol-picker (Add Investment search-by-name; answers the
+                      #            function's search itself, with the real upstream shapes)
                       #            (+ auth.ts and rest.ts helpers)
                       # pwa.spec.ts runs under its OWN config (pwa.config.ts) against
                       #            `dist/` via vite preview — see Commands above
