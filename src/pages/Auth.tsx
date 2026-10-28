@@ -5,7 +5,8 @@ import { SkipLink } from "@/components/SkipLink";
 import { useBranding } from "@/hooks/useBranding";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+import { isOAuthProviderEnabled } from "@/lib/oauthProviders";
+import { desktopHost, onGoogleReturn, parseGoogleReturn } from "@/lib/desktopHost";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -196,22 +197,73 @@ const AuthPage = () => {
     navigate(redirectTo, { replace: true });
   };
 
+  // Inside the Windows app the host relays Google's answer into this page;
+  // the session is set here, so `useAuth` (and the sign-in intent marker)
+  // see it exactly as they would on the website. See desktopHost.ts.
+  useEffect(
+    () =>
+      onGoogleReturn(async (fragment) => {
+        const r = parseGoogleReturn(fragment);
+        if (r.error || !r.accessToken || !r.refreshToken) {
+          clearSignInIntent();
+          setBusy(false);
+          toast.error(r.error ?? "Google sign-in did not finish. Please try again.");
+          return;
+        }
+        setBusy(true);
+        const { error } = await supabase.auth.setSession({
+          access_token: r.accessToken,
+          refresh_token: r.refreshToken,
+        });
+        setBusy(false);
+        if (error) {
+          clearSignInIntent();
+          notifyError(error);
+        }
+      }),
+    [],
+  );
+
   const handleGoogle = async () => {
     setBusy(true);
     // The marker is in sessionStorage, so it survives the round trip to Google
     // and back into this same tab — which is the whole journey it has to cover.
     markSignInIntent();
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/app`,
-    });
-    if (result.error) {
+    // This used to go through Lovable's OAuth broker (`@/integrations/lovable`),
+    // which sends the browser to `/~oauth/initiate` — a path only Lovable's
+    // hosting serves. Anywhere else (local dev, Vercel/Netlify) that was the
+    // app's own 404 page, and even on Lovable it signed people into Lovable's
+    // backend rather than this project's. Supabase's own OAuth is the path that
+    // works wherever the app is hosted.
+    const enabled = await isOAuthProviderEnabled("google");
+    if (enabled === false) {
       clearSignInIntent();
       setBusy(false);
-      toast.error("Google sign-in failed");
+      toast.error("Google sign-in isn't available yet. Please sign in with your email and password.");
       return;
     }
-    if (result.redirected) return;
-    navigate(redirectTo, { replace: true });
+    // Inside the Windows app, Google opens in the person's own browser and
+    // sends them back to the app's loopback address; see desktopHost.ts.
+    const desktop = desktopHost();
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: desktop
+        ? { redirectTo: desktop.redirectTo, skipBrowserRedirect: true }
+        : { redirectTo: `${window.location.origin}/app` },
+    });
+    if (error) {
+      clearSignInIntent();
+      setBusy(false);
+      notifyError(error);
+      return;
+    }
+    if (desktop && data?.url) {
+      desktop.openInBrowser(data.url);
+      // The person may close the browser instead; leave the button usable.
+      setBusy(false);
+    }
+    // On success the browser leaves for Google; `useAuth` picks up the session
+    // when it comes back to /app.
   };
 
   const handlePasswordReset = async () => {
