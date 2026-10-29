@@ -123,9 +123,12 @@ export function resolveSymbol(
 export const cacheKey = (provider: Provider, symbol: string) =>
   `${provider}:${symbol}`;
 
-/** Mirrors the edge function. A NAV publishes once a day; a quote does not. */
+/**
+ * Mirrors the edge function (`price_cache` TTLs there). A NAV publishes once a
+ * day; a quote does not, and the server keeps one for 5 minutes.
+ */
 export const TTL_MS: Record<Provider, number> = {
-  yahoo: 60_000,
+  yahoo: 5 * 60_000,
   mf: 24 * 60 * 60 * 1000,
 };
 

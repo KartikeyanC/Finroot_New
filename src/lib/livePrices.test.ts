@@ -93,7 +93,7 @@ describe("planBatch", () => {
 describe("price memo", () => {
   beforeEach(() => __clearPriceMemo());
 
-  it("expires a quote after 60s but keeps a NAV for a day", () => {
+  it("expires a quote after 5 minutes but keeps a NAV for a day", () => {
     const t0 = 1_000_000;
     writeMemo(cacheKey("yahoo", "INFY.NS"), 1500, t0);
     writeMemo(cacheKey("mf", "122639"), 82.4, t0);
@@ -101,8 +101,8 @@ describe("price memo", () => {
     const quote = (at: number) => readMemo("yahoo:INFY.NS", "yahoo", at);
     const nav = (at: number) => readMemo("mf:122639", "mf", at);
 
-    expect(quote(t0 + 59_000)).toBe(1500);
-    expect(quote(t0 + 61_000)).toBeNull();
+    expect(quote(t0 + 299_000)).toBe(1500);
+    expect(quote(t0 + 301_000)).toBeNull();
 
     expect(nav(t0 + 60_000)).toBe(82.4);
     expect(nav(t0 + 23 * 3600_000)).toBe(82.4);
@@ -224,7 +224,7 @@ describe("useLivePrices", () => {
 
     const second = renderHook(() => useLivePrices(portfolio));
     await waitFor(() => expect(second.result.current.live.a?.unitPrice).toBe(100));
-    // Still inside the 60s TTL, so no second network call.
+    // Still inside the 5-minute TTL, so no second network call.
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 

@@ -10,8 +10,16 @@
 // NAV publishes once a day) go upstream at most once in 24 h.
 //
 // The GET form is kept for one-off manual checks and older clients.
+//
+// Upstream calls go through `quotes.ts` (yahoo-finance2 for stocks, AMFI via
+// mfapi for mutual funds), which adds a 5-minute in-isolate cache and folds
+// concurrent asks for one symbol into one call. It sits in FRONT of
+// `price_cache`: a warm isolate answers repeats without touching Postgres,
+// and a cold one still gets the shared, durable cache.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import YahooFinance from "npm:yahoo-finance2@4.0.3";
+import { createQuoteClient, QUOTE_TTL_MS, type QuoteRequest } from "./quotes.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -21,9 +29,13 @@ const cors = {
 
 type Provider = "yahoo" | "mf";
 
-/** Yahoo quotes move all day; an mfapi NAV publishes once, after market close. */
+/**
+ * How long a `price_cache` row counts as fresh. Yahoo quotes move all day,
+ * so they share the in-isolate 5-minute TTL; an mfapi NAV publishes once,
+ * after market close, so the shared row is kept for a day.
+ */
 const TTL_MS: Record<Provider, number> = {
-  yahoo: 60_000,
+  yahoo: QUOTE_TTL_MS,
   mf: 24 * 60 * 60 * 1000,
 };
 
@@ -33,16 +45,19 @@ const MAX_SYMBOLS = 100;
 const isProvider = (v: unknown): v is Provider => v === "yahoo" || v === "mf";
 const keyOf = (provider: Provider, symbol: string) => `${provider}:${symbol}`;
 
+const yahooFinance = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
+
+/** Module-level, so it lives as long as the isolate and is shared by requests. */
+const quotes = createQuoteClient({
+  yahooQuote: (symbol) => yahooFinance.quote(symbol, {}, { validateResult: false }),
+});
+
+const toRequest = (provider: Provider, symbol: string): QuoteRequest =>
+  provider === "yahoo" ? { kind: "stock", symbol } : { kind: "mf", schemeCode: symbol };
+
 async function yahoo(symbol: string): Promise<number | null> {
   try {
-    const r = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`,
-      { headers: { "User-Agent": "Mozilla/5.0" } },
-    );
-    if (!r.ok) return null;
-    const j = await r.json();
-    const p = j?.chart?.result?.[0]?.meta?.regularMarketPrice;
-    return typeof p === "number" && Number.isFinite(p) && p > 0 ? p : null;
+    return (await quotes.getQuote({ kind: "stock", symbol })).price;
   } catch {
     return null;
   }
@@ -50,11 +65,7 @@ async function yahoo(symbol: string): Promise<number | null> {
 
 async function mf(code: string): Promise<number | null> {
   try {
-    const r = await fetch(`https://api.mfapi.in/mf/${encodeURIComponent(code)}/latest`);
-    if (!r.ok) return null;
-    const j = await r.json();
-    const nav = parseFloat(j?.data?.[0]?.nav);
-    return Number.isFinite(nav) && nav > 0 ? nav : null;
+    return (await quotes.getQuote({ kind: "mf", schemeCode: code })).price;
   } catch {
     return null;
   }
@@ -103,6 +114,17 @@ async function resolve(wants: Want[]): Promise<{
   const db = admin();
   const now = Date.now();
 
+  // A warm isolate already holding a fresh quote needs no database round trip.
+  let cached = 0;
+  for (const [key, want] of unique) {
+    const hit = quotes.peek(toRequest(want.provider, want.symbol));
+    if (hit) {
+      prices[key] = hit.price;
+      unique.delete(key);
+      cached++;
+    }
+  }
+
   let rows: Row[] = [];
   if (db && unique.size) {
     const { data } = await db
@@ -114,7 +136,6 @@ async function resolve(wants: Want[]): Promise<{
   const cache = new Map(rows.map((r) => [r.key, r]));
 
   const misses: Want[] = [];
-  let cached = 0;
   for (const [key, want] of unique) {
     const hit = cache.get(key);
     const age = hit ? now - new Date(hit.fetched_at).getTime() : Infinity;
