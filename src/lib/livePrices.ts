@@ -193,7 +193,8 @@ export function __clearPriceMemo() {
   memo.clear();
 }
 
-async function fetchPrices(
+/** One batched call to the live-price function; `{}` on any failure. */
+export async function fetchPrices(
   wants: Want[],
   signal?: AbortSignal,
 ): Promise<Record<string, number | null>> {

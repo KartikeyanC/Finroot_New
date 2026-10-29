@@ -16,6 +16,7 @@
 
 import { DEFAULT_ONBOARDING, type OnboardingState } from "@/lib/onboarding";
 import type { SavedTrackerView } from "@/lib/trackerFilters";
+import type { PriceAlert } from "@/lib/priceAlerts";
 
 export type CustomCategories = {
   income: { active: string[]; passive: string[] };
@@ -38,6 +39,7 @@ export type TenantSettingsMap = {
   base_currency: string;
   onboarding: OnboardingState;
   tracker_views: SavedTrackerView[];
+  price_alerts: PriceAlert[];
 };
 
 export type TenantSettingKey = keyof TenantSettingsMap;
@@ -83,6 +85,13 @@ export const TENANT_SETTINGS: {
   // rather than rebuilding them. No migration — tenant_settings constrains
   // the key's shape, not its spelling, which is the whole point of this file.
   tracker_views: {
+    defaultValue: [],
+  },
+  // Price alerts ("buy when RELIANCE.NS falls to ₹1,100"). Tenant-scoped so the
+  // web dashboard, the Windows app and the phone app share one list; the phone
+  // app writes the same JSON shape (see src/lib/priceAlerts.ts). No migration,
+  // same as tracker_views.
+  price_alerts: {
     defaultValue: [],
   },
 };

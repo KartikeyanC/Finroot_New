@@ -18,6 +18,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useNotifications } from "@/hooks/useNotifications";
 import GlobalSearch from "@/components/GlobalSearch";
 import QuickAddSheet from "@/components/QuickAddSheet";
+import { PriceAlertWatcher } from "@/components/investments/PriceAlertWatcher";
 import {
   Select,
   SelectContent,
@@ -315,6 +316,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
       <QuickAddSheet open={quickAddOpen} onOpenChange={setQuickAddOpen} />
+      {/* Price alerts fire on any page, not only Investments. Renders nothing. */}
+      <PriceAlertWatcher />
     </SidebarProvider>
   );
 }

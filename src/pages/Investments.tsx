@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import AddInvestmentDialog from "@/components/investments/AddInvestmentDialog";
 import PortfolioList from "@/components/investments/PortfolioList";
 import DematAccountsSection from "@/components/investments/DematAccountsSection";
+import PriceAlertsSection from "@/components/investments/PriceAlertsSection";
 import { InteractiveDonut, NestedDonut } from "@/components/investments/PortfolioDonuts";
 import {
   getCurrent,
@@ -167,6 +168,8 @@ const Investments = () => {
           </div>
         </section>
       )}
+
+      <PriceAlertsSection />
 
       <PortfolioList
         records={records}
