@@ -26,6 +26,9 @@ import {
 } from "@/lib/investmentsStore";
 import { useAccounts } from "@/lib/accountsStore";
 import { SymbolPicker } from "./SymbolPicker";
+import { StockPriceAlertField } from "./StockPriceAlertField";
+import { EMPTY_STOCK_ALERT } from "@/lib/stockAlertDraft";
+import { useStockAlertSaver } from "@/hooks/useStockAlertSaver";
 
 type AssetType =
   | "stocks"
@@ -155,6 +158,8 @@ export default function AddInvestmentDialog({
   const [goal, setGoal] = useState<GoalLink | "">("");
   const [broker, setBroker] = useState<Broker>("Zerodha");
   const [form, setForm] = useState<Record<string, string>>({});
+  const [stockAlert, setStockAlert] = useState(EMPTY_STOCK_ALERT);
+  const saveStockAlert = useStockAlertSaver();
   // MF strategy
   const [mfMode, setMfMode] = useState<"SIP" | "Lumpsum">("Lumpsum");
   // Gold subtype
@@ -175,6 +180,7 @@ export default function AddInvestmentDialog({
     if (!open) {
       seededIdRef.current = null;
       setLinkedAccountId("none");
+      setStockAlert(EMPTY_STOCK_ALERT);
       return;
     }
     if (initial && seededIdRef.current !== initial.id) {
@@ -390,6 +396,7 @@ export default function AddInvestmentDialog({
               <OutputBox label="Total Invested" value={fmt(calc.total ?? 0)} />
               <OutputBox label="Buying Avg" value={fmt(calc.avg ?? 0)} />
             </div>
+            <StockPriceAlertField ticker={form.ticker} value={stockAlert} onChange={setStockAlert} />
           </div>
         );
 
@@ -693,6 +700,7 @@ export default function AddInvestmentDialog({
       savedAt: initial?.savedAt ?? new Date().toISOString(),
     };
     onSave?.(payload);
+    if (asset === "stocks") saveStockAlert(stockAlert, form.ticker, form.name);
     toast({
       title: isEdit ? "Investment updated" : "Investment saved",
       description: `${ASSET_OPTIONS.find((a) => a.value === asset)?.label} ${
