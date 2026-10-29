@@ -75,6 +75,82 @@ function fetchUpstream(provider: Provider, symbol: string): Promise<number | nul
   return provider === "yahoo" ? yahoo(symbol) : mf(symbol);
 }
 
+// --------- Search by name (the Add Investment dialog) ---------
+//
+// The same two upstreams, asked for names instead of prices, so a holding
+// can get its ticker or scheme code without the person knowing it. The
+// browser's CSP only allows Supabase, which is why this lives here and not
+// in the client. Nothing is cached: a search is one request per pause in
+// typing, and the answers change as listings do.
+
+interface SearchHit {
+  symbol: string;
+  name: string;
+  exchange?: string;
+  type?: string;
+}
+
+const MAX_QUERY = 60;
+const MAX_HITS = 10;
+
+async function yahooSearch(q: string): Promise<SearchHit[]> {
+  try {
+    const r = await fetch(
+      `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}` +
+        `&quotesCount=${MAX_HITS}&newsCount=0&listsCount=0`,
+      { headers: { "User-Agent": "Mozilla/5.0" } },
+    );
+    if (!r.ok) return [];
+    const j = await r.json();
+    const quotes: unknown[] = Array.isArray(j?.quotes) ? j.quotes : [];
+    const out: SearchHit[] = [];
+    for (const q of quotes) {
+      const quote = q as Record<string, unknown>;
+      const symbol = String(quote.symbol ?? "").trim();
+      const name = String(quote.longname ?? quote.shortname ?? "").trim();
+      if (!symbol || !name) continue;
+      out.push({
+        symbol,
+        name,
+        exchange: String(quote.exchDisp ?? quote.exchange ?? ""),
+        type: String(quote.quoteType ?? ""),
+      });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
+async function mfSearch(q: string): Promise<SearchHit[]> {
+  try {
+    const r = await fetch(`https://api.mfapi.in/mf/search?q=${encodeURIComponent(q)}`);
+    if (!r.ok) return [];
+    const j = await r.json();
+    const rows: unknown[] = Array.isArray(j) ? j : [];
+    const out: SearchHit[] = [];
+    for (const row of rows.slice(0, MAX_HITS)) {
+      const scheme = row as Record<string, unknown>;
+      const symbol = String(scheme.schemeCode ?? "").trim();
+      const name = String(scheme.schemeName ?? "").trim();
+      if (symbol && name) out.push({ symbol, name });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
+function parseSearch(body: unknown): { provider: Provider; q: string } | null {
+  const raw = (body as { search?: unknown })?.search as
+    | { provider?: unknown; q?: unknown }
+    | undefined;
+  if (!raw) return null;
+  const q = String(raw.q ?? "").trim().slice(0, MAX_QUERY);
+  if (!isProvider(raw.provider) || q.length < 2) return null;
+  return { provider: raw.provider, q };
+}
+
 /**
  * service_role, because `price_cache` has RLS on with no policies — the cache
  * is deliberately unreachable from the browser. This client is used ONLY for
@@ -206,7 +282,15 @@ Deno.serve(async (req) => {
 
   try {
     if (req.method === "POST") {
-      const wants = parseWants(await req.json().catch(() => ({})));
+      const body = await req.json().catch(() => ({}));
+      const search = parseSearch(body);
+      if (search) {
+        const results = search.provider === "mf"
+          ? await mfSearch(search.q)
+          : await yahooSearch(search.q);
+        return json({ results });
+      }
+      const wants = parseWants(body);
       if (!wants.length) return json({ prices: {}, cached: 0, fetched: 0, stale: 0 });
       return json(await resolve(wants));
     }
