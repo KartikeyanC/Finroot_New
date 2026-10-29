@@ -39,8 +39,8 @@ export function useTenantSetting<K extends TenantSettingKey>(
     queryKey,
     enabled: !!currentTenantId,
     staleTime: options?.refreshMs ? 10_000 : 30_000,
-    refetchInterval: options?.refreshMs ?? false,
-    refetchOnWindowFocus: !!options?.refreshMs,
+    // Otherwise the app-wide default applies (lib/liveRefresh.ts).
+    ...(options?.refreshMs ? { refetchInterval: options.refreshMs, refetchOnWindowFocus: true } : {}),
     queryFn: async (): Promise<TenantSettingsMap[K]> => {
       const { data, error } = await supabase
         .from("tenant_settings")

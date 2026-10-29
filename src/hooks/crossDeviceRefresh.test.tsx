@@ -15,6 +15,7 @@ vi.mock("@/contexts/TenantContext", () => ({ useTenant: () => ({ currentTenantId
 import { useTenantSetting } from "./useTenantSetting";
 import { usePriceAlerts } from "./usePriceAlerts";
 import { INVESTMENTS_REFRESH_MS, useInvestments } from "@/lib/investmentsStore";
+import { liveQueryDefaults } from "@/lib/liveRefresh";
 
 const lastOptions = () => useQuery.mock.calls.at(-1)![0];
 
@@ -36,9 +37,14 @@ describe("cross-device refresh", () => {
     expect(opts.refetchOnWindowFocus).toBe(true);
   });
 
-  it("other settings keep their old behaviour: no polling", () => {
+  it("other settings fall back to the app-wide refresh", () => {
     renderHook(() => useTenantSetting("budget_planner"));
-    expect(lastOptions().refetchInterval).toBe(false);
-    expect(lastOptions().refetchOnWindowFocus).toBe(false);
+    expect(lastOptions()).not.toHaveProperty("refetchInterval");
+    expect(lastOptions()).not.toHaveProperty("refetchOnWindowFocus");
+  });
+
+  it("the app-wide default re-reads every screen each minute and on focus", () => {
+    expect(liveQueryDefaults.refetchInterval).toBe(60_000);
+    expect(liveQueryDefaults.refetchOnWindowFocus).toBe(true);
   });
 });

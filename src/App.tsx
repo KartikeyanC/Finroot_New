@@ -80,6 +80,7 @@ import { PoShell } from "./components/po/PoShell";
 import { BrandDocumentTitle } from "./components/brand/BrandDocumentTitle";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { MotionDebug } from "@/components/motion/MotionDebug";
+import { liveQueryDefaults } from "@/lib/liveRefresh";
 
 /**
  * Shown while a route's chunk is in flight. Deliberately a plain centred
@@ -119,12 +120,9 @@ const queryClient = new QueryClient({
   queryCache: new QueryCache({ onError: handleExpiredSession }),
   mutationCache: new MutationCache({ onError: handleExpiredSession }),
   defaultOptions: {
-    queries: {
-      staleTime: 60_000, // 1 min — avoid refetching on every navigation
-      gcTime: 5 * 60_000, // keep unused data cached for 5 min
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
+    // Every query on screen re-reads once a minute and on window focus, so a
+    // change made on the phone shows up here without a reload.
+    queries: liveQueryDefaults,
   },
 });
 
