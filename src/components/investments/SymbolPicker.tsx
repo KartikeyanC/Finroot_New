@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import type { Provider } from "@/lib/livePrices";
-import { MIN_QUERY, useSymbolSearch, type SymbolHit } from "@/lib/symbolSearch";
+import { MIN_QUERY, typedTickerHits, useSymbolSearch, type SymbolHit } from "@/lib/symbolSearch";
 
 interface Props {
   provider: Provider;
@@ -30,7 +30,13 @@ export function SymbolPicker({ provider, value, onChange, onPick, placeholder }:
   const { hits, searching } = useSymbolSearch(provider, open ? query : "");
   const wrap = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setActive(0), [hits]);
+  // Nothing found for a stock: offer what was typed as a ticker instead of a
+  // dead end — ITC.NS on NSE first, then ITC as a US ticker.
+  const fallback =
+    provider === "yahoo" && !searching && hits.length === 0 ? typedTickerHits(query) : [];
+  const options = hits.length ? hits : fallback;
+
+  useEffect(() => setActive(0), [hits, query]);
 
   // Click or focus anywhere else closes the list.
   useEffect(() => {
@@ -44,7 +50,8 @@ export function SymbolPicker({ provider, value, onChange, onPick, placeholder }:
 
   const pick = (hit: SymbolHit) => {
     onChange(hit.ticker);
-    onPick?.(hit);
+    // A typed ticker has no company name to offer the dialog.
+    if (!hit.typed) onPick?.(hit);
     setQuery("");
     setOpen(false);
   };
@@ -55,13 +62,13 @@ export function SymbolPicker({ provider, value, onChange, onPick, placeholder }:
     if (!showList) return;
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setActive((i) => Math.min(i + 1, Math.max(hits.length - 1, 0)));
+      setActive((i) => Math.min(i + 1, Math.max(options.length - 1, 0)));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActive((i) => Math.max(i - 1, 0));
-    } else if (e.key === "Enter" && hits[active]) {
+    } else if (e.key === "Enter" && options[active]) {
       e.preventDefault();
-      pick(hits[active]);
+      pick(options[active]);
     } else if (e.key === "Escape") {
       setOpen(false);
     }
@@ -74,7 +81,7 @@ export function SymbolPicker({ provider, value, onChange, onPick, placeholder }:
         aria-expanded={showList}
         aria-controls={listId}
         aria-autocomplete="list"
-        aria-activedescendant={showList && hits[active] ? `${listId}-${active}` : undefined}
+        aria-activedescendant={showList && options[active] ? `${listId}-${active}` : undefined}
         autoComplete="off"
         placeholder={placeholder}
         value={value}
@@ -97,12 +104,17 @@ export function SymbolPicker({ provider, value, onChange, onPick, placeholder }:
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> Searching…
             </li>
           )}
-          {!searching && hits.length === 0 && (
+          {!searching && hits.length === 0 && fallback.length > 0 && (
+            <li className="px-2 py-1.5 text-xs text-muted-foreground">
+              No company found by that name. Use it as a ticker:
+            </li>
+          )}
+          {!searching && options.length === 0 && (
             <li className="px-2 py-2 text-sm text-muted-foreground">
               No matches — you can still type the {provider === "mf" ? "scheme code" : "ticker"} yourself.
             </li>
           )}
-          {hits.map((hit, i) => (
+          {options.map((hit, i) => (
             <li
               key={hit.ticker}
               id={`${listId}-${i}`}
@@ -120,8 +132,8 @@ export function SymbolPicker({ provider, value, onChange, onPick, placeholder }:
             >
               <div className="truncate font-medium">{hit.name}</div>
               <div className="truncate text-xs text-muted-foreground">
-                {hit.ticker}
-                {hit.exchange ? ` · ${hit.exchange}` : ""}
+                {hit.typed ? hit.exchange : hit.ticker}
+                {!hit.typed && hit.exchange ? ` · ${hit.exchange}` : ""}
               </div>
             </li>
           ))}

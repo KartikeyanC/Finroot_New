@@ -6,12 +6,15 @@
 // Both resolve to the same record, { price, currency, asOf, source }, or
 // reject when no usable price came back.
 //
-// Stocks go through yahoo-finance2's `quote()`; if that fails (Yahoo's crumb
-// handshake is the usual casualty from datacenter IPs) the plain chart
-// endpoint this function used before is tried, so adopting the library can
-// never price fewer holdings than the old code did. Mutual funds come from
-// AMFI data via api.mfapi.in, whose `/latest` route answers the same
-// `{ meta, data: [{ date, nav }] }` shape as the full history, one row long.
+// Stocks go through yahoo-finance2's `quote()`. A bare ticker that does not
+// price as typed is retried with `.NS` (RELIANCE → RELIANCE.NS); US tickers
+// such as AAPL answer first time and are never suffixed. If the library
+// fails (Yahoo's crumb handshake is the usual casualty from datacenter IPs)
+// the plain chart endpoint this function used before is tried, so adopting
+// the library can never price fewer holdings than the old code did. Mutual
+// funds come from AMFI data via api.mfapi.in, whose `/latest` route answers
+// the same `{ meta, data: [{ date, nav }] }` shape as the full history, one
+// row long.
 //
 // Caching: a 5-minute TTL Map keyed per symbol / scheme, plus a map of
 // in-flight promises so concurrent asks for one key share one upstream call.
@@ -139,7 +142,7 @@ export function createQuoteClient(deps: QuoteDeps = {}): QuoteClient {
     return r.json();
   }
 
-  async function stock(symbol: string): Promise<Quote | null> {
+  async function stockOnce(symbol: string): Promise<Quote | null> {
     if (deps.yahooQuote) {
       try {
         const q = parseYahooQuote(await deps.yahooQuote(symbol), now());
@@ -157,6 +160,16 @@ export function createQuoteClient(deps: QuoteDeps = {}): QuoteClient {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * A bare ticker that does not price as typed is tried on NSE: `RELIANCE`
+   * and `ITC` are Indian equities, while `AAPL` already answers as a US one.
+   */
+  async function stock(symbol: string): Promise<Quote | null> {
+    const q = await stockOnce(symbol);
+    if (q || symbol.includes(".")) return q;
+    return stockOnce(`${symbol}.NS`);
   }
 
   async function mf(code: string): Promise<Quote | null> {

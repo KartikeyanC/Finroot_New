@@ -342,7 +342,7 @@ export default function AddInvestmentDialog({
             <Field label="Stock (search by name, or type a ticker)">
               <SymbolPicker
                 provider="yahoo"
-                placeholder="e.g. Reliance, Apple — or NSE:RELIANCE, NASDAQ:AAPL"
+                placeholder="e.g. Reliance, Apple — or RELIANCE.NS, ITC.NS, AAPL"
                 value={form.ticker ?? ""}
                 onChange={(v) => set("ticker", v.toUpperCase())}
                 onPick={(hit) => { if (!form.name) set("name", hit.name); }}

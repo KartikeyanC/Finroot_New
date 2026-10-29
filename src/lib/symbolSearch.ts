@@ -14,12 +14,14 @@ import { useEffect, useRef, useState } from "react";
 import type { Provider } from "./livePrices";
 
 export interface SymbolHit {
-  /** What goes in the holding: a Google Finance-style ticker, or a scheme code. */
+  /** What goes in the holding: a Yahoo symbol (RELIANCE.NS, AAPL), or a scheme code. */
   ticker: string;
   /** Display name — the fund's full name, or the company's. */
   name: string;
   /** Exchange as shown to people ("NSE", "NASDAQ"); empty for funds. */
   exchange: string;
+  /** Built from what was typed, not found by search — carries no company name. */
+  typed?: boolean;
 }
 
 /** What the function returns per hit, before `toHit` makes it a `SymbolHit`. */
@@ -34,48 +36,37 @@ export const MIN_QUERY = 2;
 export const DEBOUNCE_MS = 300;
 export const MAX_RESULTS = 8;
 
-/**
- * Yahoo suffix → the prefix the dialog has always asked for. The inverse of
- * `YAHOO_SUFFIX` in livePrices.ts, so a picked ticker resolves back to the
- * very symbol Yahoo returned (`symbolSearch.test.ts` pins the round trip).
- */
-const SUFFIX_TO_PREFIX: Record<string, string> = {
-  ".NS": "NSE",
-  ".BO": "BOM",
-  ".L": "LSE",
-  ".T": "TSE",
-  ".TO": "TSX",
-  ".AX": "ASX",
-  ".HK": "HKG",
-  ".F": "FRA",
-  ".PA": "EPA",
-};
-
-/** Yahoo's exchange codes for the US venues, which carry no suffix. */
-const US_EXCHANGE_PREFIX: Record<string, string> = {
-  NMS: "NASDAQ",
-  NGM: "NASDAQ",
-  NCM: "NASDAQ",
-  NAS: "NASDAQ",
-  NYQ: "NYSE",
-  ASE: "AMEX",
-};
+/** Yahoo's exchange codes (and display name) for the National Stock Exchange. */
+const NSE_EXCHANGES = new Set(["NSI", "NSE"]);
 
 /**
- * A Yahoo symbol as the dialog's ticker: `RELIANCE.NS` → `NSE:RELIANCE`,
- * `AAPL` on NMS → `NASDAQ:AAPL`. Anything else is kept as Yahoo spells it,
- * which `resolveSymbol` passes through unchanged.
+ * A search result as the holding's ticker: the Yahoo symbol itself, which
+ * `resolveSymbol` passes straight through to the price lookup. An NSE
+ * listing always carries `.NS` (`RELIANCE` on NSE → `RELIANCE.NS`); US
+ * tickers stay bare (`AAPL`). Older holdings written as `NSE:RELIANCE` keep
+ * working — `resolveSymbol` still maps that prefix to the same symbol.
  */
 export function yahooToTicker(symbol: string, exchange?: string): string {
   const sym = symbol.trim().toUpperCase();
-  const dot = sym.lastIndexOf(".");
-  if (dot > 0) {
-    const prefix = SUFFIX_TO_PREFIX[sym.slice(dot)];
-    if (prefix) return `${prefix}:${sym.slice(0, dot)}`;
-    return sym;
-  }
-  const us = exchange ? US_EXCHANGE_PREFIX[exchange.toUpperCase()] : undefined;
-  return us ? `${us}:${sym}` : sym;
+  const onNse = exchange ? NSE_EXCHANGES.has(exchange.trim().toUpperCase()) : false;
+  return onNse && !sym.includes(".") ? `${sym}.NS` : sym;
+}
+
+const TICKER_LIKE = /^[A-Z0-9][A-Z0-9&.-]{0,19}$/;
+
+/**
+ * What to offer when search finds nothing (or cannot be reached): the typed
+ * text as a ticker. A bare `ITC` is offered on NSE first (`ITC.NS`), then as
+ * a US ticker; anything already carrying a suffix is offered as typed.
+ */
+export function typedTickerHits(query: string): SymbolHit[] {
+  const q = query.trim().toUpperCase();
+  if (!TICKER_LIKE.test(q)) return [];
+  if (q.includes(".")) return [{ ticker: q, name: q, exchange: "as typed", typed: true }];
+  return [
+    { ticker: `${q}.NS`, name: `${q}.NS`, exchange: "NSE · India", typed: true },
+    { ticker: q, name: q, exchange: "US ticker", typed: true },
+  ];
 }
 
 /** Only things a "Direct Stocks" holding can be: shares and ETFs. */

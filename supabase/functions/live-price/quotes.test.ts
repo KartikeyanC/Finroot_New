@@ -224,7 +224,8 @@ describe("createQuoteClient", () => {
     // Chart fallback also fails, so the first round has no price at all.
     const fetchMock = vi.fn(async () => jsonResponse({}, 429));
     const client = createQuoteClient({ yahooQuote, fetch: fetchMock });
-    const ask = () => client.getQuote({ kind: "stock", symbol: "AAPL" });
+    // Suffixed, so the bare-ticker .NS retry stays out of this test.
+    const ask = () => client.getQuote({ kind: "stock", symbol: "HSBA.L" });
 
     const a = ask();
     const b = ask();
@@ -249,6 +250,37 @@ describe("createQuoteClient", () => {
       source: "yahoo",
     });
     expect(String(fetchMock.mock.calls[0][0])).toContain("/v8/finance/chart/AAPL?");
+  });
+
+  it("retries a bare ticker on NSE when it does not price as typed", async () => {
+    const yahooQuote = vi.fn(async (symbol: string) =>
+      symbol === "ITC.NS" ? { ...YAHOO_QUOTE_RELIANCE, symbol, regularMarketPrice: 264.6 } : undefined,
+    );
+    const fetchMock = vi.fn<typeof fetch>(async () => jsonResponse({ chart: { result: null } }));
+    const client = createQuoteClient({ yahooQuote, fetch: fetchMock });
+
+    await expect(client.getQuote({ kind: "stock", symbol: "itc" })).resolves.toMatchObject({
+      price: 264.6,
+      currency: "INR",
+    });
+    expect(yahooQuote.mock.calls.map((c) => c[0])).toEqual(["ITC", "ITC.NS"]);
+  });
+
+  it("never suffixes a US ticker that prices as typed", async () => {
+    const yahooQuote = vi.fn(async (_symbol: string) => YAHOO_QUOTE_AAPL_RAW);
+    const client = createQuoteClient({ yahooQuote, fetch: vi.fn<typeof fetch>() });
+
+    await client.getQuote({ kind: "stock", symbol: "AAPL" });
+    expect(yahooQuote.mock.calls.map((c) => c[0])).toEqual(["AAPL"]);
+  });
+
+  it("does not add .NS to a symbol that already has a suffix", async () => {
+    const yahooQuote = vi.fn(async (_symbol: string) => undefined);
+    const fetchMock = vi.fn<typeof fetch>(async () => jsonResponse({}, 404));
+    const client = createQuoteClient({ yahooQuote, fetch: fetchMock });
+
+    await expect(client.getQuote({ kind: "stock", symbol: "FOO.BO" })).rejects.toThrow();
+    expect(yahooQuote.mock.calls.map((c) => c[0])).toEqual(["FOO.BO"]);
   });
 
   it("refuses a non-numeric scheme code without going upstream", async () => {

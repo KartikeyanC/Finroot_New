@@ -5,6 +5,7 @@ import {
   MAX_RESULTS,
   searchSymbols,
   toHit,
+  typedTickerHits,
   useSymbolSearch,
   yahooToTicker,
 } from "./symbolSearch";
@@ -15,25 +16,20 @@ const stock = (ticker: string): InvestmentRecord =>
   ({ id: "r1", asset: "stocks", fields: { ticker } }) as unknown as InvestmentRecord;
 
 describe("yahooToTicker", () => {
-  it("turns a Yahoo suffix into the prefix the dialog asks for", () => {
-    expect(yahooToTicker("RELIANCE.NS")).toBe("NSE:RELIANCE");
-    expect(yahooToTicker("500325.BO")).toBe("BOM:500325");
-    expect(yahooToTicker("HSBA.L")).toBe("LSE:HSBA");
-    expect(yahooToTicker("SHOP.TO")).toBe("TSX:SHOP");
-  });
-
-  it("names the US venue from Yahoo's exchange code, since those carry no suffix", () => {
-    expect(yahooToTicker("AAPL", "NMS")).toBe("NASDAQ:AAPL");
-    expect(yahooToTicker("IBM", "NYQ")).toBe("NYSE:IBM");
-    expect(yahooToTicker("SPY", "ASE")).toBe("AMEX:SPY");
-  });
-
-  it("keeps a symbol it has no prefix for, which resolveSymbol passes through", () => {
-    expect(yahooToTicker("SAP.DE")).toBe("SAP.DE");
+  it("keeps the Yahoo symbol, so Indian picks read RELIANCE.NS and US picks AAPL", () => {
+    expect(yahooToTicker("RELIANCE.NS", "NSE")).toBe("RELIANCE.NS");
+    expect(yahooToTicker("itc.ns")).toBe("ITC.NS");
+    expect(yahooToTicker("AAPL", "NMS")).toBe("AAPL");
+    expect(yahooToTicker("500325.BO", "BSE")).toBe("500325.BO");
+    expect(yahooToTicker("HSBA.L")).toBe("HSBA.L");
     expect(yahooToTicker("BTC-USD")).toBe("BTC-USD");
-    expect(yahooToTicker("ABC")).toBe("ABC");
   });
 
+  it("appends .NS to an NSE listing that arrives without it", () => {
+    expect(yahooToTicker("RELIANCE", "NSI")).toBe("RELIANCE.NS");
+    expect(yahooToTicker("ITC", "NSE")).toBe("ITC.NS");
+    expect(yahooToTicker("IBM", "NYQ")).toBe("IBM");
+  });
   // The whole point: whatever the picker writes must come back out of
   // resolveSymbol as the symbol Yahoo priced it under.
   it.each([
@@ -50,12 +46,35 @@ describe("yahooToTicker", () => {
   });
 });
 
+describe("typedTickerHits", () => {
+  it("offers a bare ticker on NSE first, then as a US ticker", () => {
+    expect(typedTickerHits("itc").map((h) => h.ticker)).toEqual(["ITC.NS", "ITC"]);
+    expect(typedTickerHits("M&M").map((h) => h.ticker)).toEqual(["M&M.NS", "M&M"]);
+    expect(typedTickerHits("aapl").every((h) => h.typed)).toBe(true);
+  });
+
+  it("offers a suffixed ticker exactly as typed", () => {
+    expect(typedTickerHits("reliance.ns").map((h) => h.ticker)).toEqual(["RELIANCE.NS"]);
+  });
+
+  it("offers nothing for text that is not a ticker", () => {
+    expect(typedTickerHits("tata motors")).toEqual([]);
+    expect(typedTickerHits("")).toEqual([]);
+  });
+
+  it("round-trips its offers through resolveSymbol", () => {
+    for (const hit of typedTickerHits("itc")) {
+      expect(resolveSymbol(stock(hit.ticker))).toEqual({ provider: "yahoo", symbol: hit.ticker });
+    }
+  });
+});
+
 describe("toHit", () => {
   it("keeps shares and ETFs for a stocks holding, nothing else", () => {
     expect(toHit("yahoo", { symbol: "INFY.NS", name: "Infosys", exchange: "NSE", type: "EQUITY" }))
-      .toEqual({ ticker: "NSE:INFY", name: "Infosys", exchange: "NSE" });
+      .toEqual({ ticker: "INFY.NS", name: "Infosys", exchange: "NSE" });
     expect(toHit("yahoo", { symbol: "NIFTYBEES.NS", name: "Nippon Nifty", type: "ETF" })?.ticker)
-      .toBe("NSE:NIFTYBEES");
+      .toBe("NIFTYBEES.NS");
     expect(toHit("yahoo", { symbol: "BTC-USD", name: "Bitcoin", type: "CRYPTOCURRENCY" })).toBeNull();
     expect(toHit("yahoo", { symbol: "0P0000XYZ.BO", name: "Some Fund", type: "MUTUALFUND" })).toBeNull();
   });
@@ -93,7 +112,7 @@ describe("searchSymbols", () => {
       }),
     });
     const hits = await searchSymbols("yahoo", "reliance");
-    expect(hits).toEqual([{ ticker: "NSE:RELIANCE", name: "Reliance Industries Limited", exchange: "NSE" }]);
+    expect(hits).toEqual([{ ticker: "RELIANCE.NS", name: "Reliance Industries Limited", exchange: "NSE" }]);
 
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("https://example.supabase.co/functions/v1/live-price");

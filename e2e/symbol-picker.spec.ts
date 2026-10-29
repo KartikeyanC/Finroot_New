@@ -49,13 +49,13 @@ test.describe("Add Investment: search by name", () => {
       await page.getByRole("option", { name: "Direct Stocks" }).click();
     }
     await stockBox.fill("reliance");
-    const nse = page.getByRole("option", { name: /Reliance Industries Limited.*NSE:RELIANCE/s });
+    const nse = page.getByRole("option", { name: /Reliance Industries Limited.*RELIANCE\.NS/s });
     await expect(nse).toBeVisible();
     // The crypto hit is not a stock and must not be offered.
     await expect(page.getByRole("option", { name: /Reliance Coin/ })).toHaveCount(0);
     await page.screenshot({ path: "test-results/symbol-picker-stock.png" });
     await nse.click();
-    await expect(stockBox).toHaveValue("NSE:RELIANCE");
+    await expect(stockBox).toHaveValue("RELIANCE.NS");
     await expect(dialog.getByPlaceholder("e.g. Infosys Ltd")).toHaveValue("Reliance Industries Limited");
 
     // Mutual funds: the same box, the scheme code instead.
