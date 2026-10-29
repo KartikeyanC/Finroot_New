@@ -217,6 +217,15 @@ function recordToRow(rec: InvestmentRecord, tenantId: string) {
   };
 }
 
+/**
+ * How often open screens re-read holdings, so one added or changed on the
+ * phone (or in another window) appears without a reload. Polling pauses while
+ * the window is hidden; switching back to it refreshes at once. Realtime would
+ * be instant but needs `investments` added to the supabase_realtime
+ * publication (a migration) — this needs nothing on the server.
+ */
+export const INVESTMENTS_REFRESH_MS = 60_000;
+
 /** Investments are persisted server-side (tenant-scoped). API unchanged. */
 export function useInvestments() {
   const { currentTenantId } = useTenant();
@@ -226,6 +235,9 @@ export function useInvestments() {
   const { data, isLoading } = useQuery({
     queryKey,
     enabled: !!currentTenantId,
+    staleTime: 10_000,
+    refetchInterval: INVESTMENTS_REFRESH_MS,
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("investments")

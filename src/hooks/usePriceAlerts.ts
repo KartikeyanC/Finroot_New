@@ -20,7 +20,9 @@ import {
  * alert as fired could undo an alert added a second earlier.
  */
 export function usePriceAlerts() {
-  const { value, setValue, loading, saving } = useTenantSetting("price_alerts");
+  // Re-read every minute: alerts added, deleted or fired on the phone show up
+  // here without a reload.
+  const { value, setValue, loading, saving } = useTenantSetting("price_alerts", { refreshMs: 60_000 });
   const alerts = useMemo(() => parseStoredAlerts(value), [value]);
   const latest = useRef(alerts);
   latest.current = alerts;

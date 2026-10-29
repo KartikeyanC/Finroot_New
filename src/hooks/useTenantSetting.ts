@@ -20,7 +20,16 @@ import {
  * little as possible — the same approach that let the Phase-2 store migrations
  * land without touching a single page.
  */
-export function useTenantSetting<K extends TenantSettingKey>(key: K) {
+export function useTenantSetting<K extends TenantSettingKey>(
+  key: K,
+  /**
+   * Re-read the setting every `refreshMs` while the window is visible, and on
+   * return to it — for settings another device may change while this screen
+   * is open (price alerts). Off by default: most settings are only ever
+   * changed from the screen showing them.
+   */
+  options?: { refreshMs?: number },
+) {
   const { currentTenantId } = useTenant();
   const qc = useQueryClient();
   const { defaultValue } = TENANT_SETTINGS[key];
@@ -29,7 +38,9 @@ export function useTenantSetting<K extends TenantSettingKey>(key: K) {
   const { data, isLoading } = useQuery({
     queryKey,
     enabled: !!currentTenantId,
-    staleTime: 30_000,
+    staleTime: options?.refreshMs ? 10_000 : 30_000,
+    refetchInterval: options?.refreshMs ?? false,
+    refetchOnWindowFocus: !!options?.refreshMs,
     queryFn: async (): Promise<TenantSettingsMap[K]> => {
       const { data, error } = await supabase
         .from("tenant_settings")
