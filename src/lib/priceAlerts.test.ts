@@ -12,6 +12,7 @@ import {
   newAlert,
   parseStoredAlerts,
   rearm,
+  alertColumnFor,
   validateDraft,
   type PriceAlert,
 } from "./priceAlerts";
@@ -171,5 +172,28 @@ describe("parseStoredAlerts", () => {
   it("reads a non-array as no alerts", () => {
     expect(parseStoredAlerts({})).toEqual([]);
     expect(parseStoredAlerts(null)).toEqual([]);
+  });
+});
+
+describe("alertColumnFor", () => {
+  it("shows the buy level nearest to firing, and how many more there are", () => {
+    const col = alertColumnFor("ITC.NS", [alert({ target: 240 }), alert({ id: "a2", target: 255 })]);
+    expect(col).toEqual({ text: "↓ ₹255", detail: "ITC Limited falls to ₹255 or below", triggered: false, more: 1 });
+  });
+
+  it("shows an upper target with an up arrow", () => {
+    expect(alertColumnFor("ITC.NS", [alert({ direction: "above", target: 300 })])?.text).toBe("↑ ₹300");
+  });
+
+  it("shows the latest trigger once every alert has fired", () => {
+    const col = alertColumnFor("ITC.NS", [
+      alert({ triggeredAt: "2026-10-28T06:00:00.000Z", triggeredPrice: 259 }),
+      alert({ id: "a2", triggeredAt: "2026-10-29T06:00:00.000Z", triggeredPrice: 257.5 }),
+    ]);
+    expect(col).toMatchObject({ text: "Hit ₹257.5", triggered: true });
+  });
+
+  it("is empty for a stock with no alerts", () => {
+    expect(alertColumnFor("AAPL", [alert()])).toBeNull();
   });
 });

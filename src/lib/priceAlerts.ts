@@ -181,3 +181,38 @@ export function parseStoredAlerts(raw: unknown): PriceAlert[] {
   }
   return out;
 }
+
+/**
+ * What the portfolio row shows in its "Price Alert" column for one stock:
+ * the alert still watching that is nearest to firing ("↓ ₹250"), or, when
+ * every alert has fired, the latest trigger. Null when the stock has none.
+ */
+export function alertColumnFor(
+  symbol: string,
+  alerts: PriceAlert[],
+): { text: string; detail: string; triggered: boolean; more: number } | null {
+  const mine = alerts.filter((a) => a.symbol === symbol);
+  if (!mine.length) return null;
+  const watching = mine.filter(isActive);
+  if (watching.length) {
+    // Nearest first: the highest buy level, then the lowest upper level.
+    const pick = [...watching].sort((x, y) =>
+      x.direction === y.direction
+        ? x.direction === "below" ? y.target - x.target : x.target - y.target
+        : x.direction === "below" ? -1 : 1,
+    )[0];
+    return {
+      text: `${pick.direction === "below" ? "↓" : "↑"} ${formatPrice(symbol, pick.target)}`,
+      detail: describeAlert(pick),
+      triggered: false,
+      more: watching.length - 1,
+    };
+  }
+  const last = [...mine].sort((x, y) => String(y.triggeredAt).localeCompare(String(x.triggeredAt)))[0];
+  return {
+    text: `Hit ${formatPrice(symbol, last.triggeredPrice ?? last.target)}`,
+    detail: `Triggered: ${describeAlert(last)}`,
+    triggered: true,
+    more: 0,
+  };
+}

@@ -37,8 +37,23 @@ describe("StockGroupRow", () => {
     mount();
     expect(screen.getByText("ITC")).toBeInTheDocument();
     expect(screen.getByText("2 purchases")).toBeInTheDocument();
-    expect(screen.getByText(/4 shares · average/)).toHaveTextContent("₹210");
+    expect(screen.getByText("4 shares")).toBeInTheDocument();
+    expect(screen.getByText("Avg Price").nextSibling).toHaveTextContent("₹210");
     expect(screen.getByText("+26.19% Profit")).toBeInTheDocument();
+    expect(screen.queryByText("Price Alert")).not.toBeInTheDocument();
+  });
+
+  it("shows the stock's price alert as a column", () => {
+    mount({
+      alerts: [
+        { id: "x", symbol: "ITC.NS", name: "ITC", target: 250, direction: "below", createdAt: "", triggeredAt: null, triggeredPrice: null },
+        { id: "y", symbol: "ITC.NS", name: "ITC", target: 240, direction: "below", createdAt: "", triggeredAt: null, triggeredPrice: null },
+        { id: "z", symbol: "AAPL", name: "Apple", target: 1, direction: "below", createdAt: "", triggeredAt: null, triggeredPrice: null },
+      ],
+    });
+    const value = screen.getByText("Price Alert").nextSibling as HTMLElement;
+    expect(value).toHaveTextContent("↓ ₹250 +1");
+    expect(value.parentElement).toHaveAttribute("title", "ITC falls to ₹250 or below");
   });
 
   it("opens to list each purchase with its date, quantity and price", () => {

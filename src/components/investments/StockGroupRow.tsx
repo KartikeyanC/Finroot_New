@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/finance";
 import { BROKER_TINTS, type Broker, type InvestmentRecord } from "@/lib/investmentsStore";
-import type { LiveMap } from "@/lib/livePrices";
+import { resolveSymbol, type LiveMap } from "@/lib/livePrices";
+import { alertColumnFor, type PriceAlert } from "@/lib/priceAlerts";
 import { groupCurrent, type StockGroup } from "@/lib/stockLots";
 
 export type BuyMorePrefill = { fields: Record<string, string>; broker?: Broker };
@@ -25,7 +26,9 @@ export function StockGroupRow({
   onEdit,
   onDelete,
   onBuyMore,
+  alerts = [],
 }: {
+  alerts?: PriceAlert[];
   group: StockGroup;
   live: LiveMap;
   onEdit: (rec: InvestmentRecord) => void;
@@ -45,6 +48,7 @@ export function StockGroupRow({
   const brokers = [...new Set(group.lots.map((l) => l.record.broker).filter(Boolean))] as Broker[];
   const latest = group.lots[group.lots.length - 1].record;
   const panelId = `lots-${group.key.replace(/[^a-zA-Z0-9]/g, "-")}`;
+  const alert = alertColumnFor(resolveSymbol(first).symbol, alerts);
 
   return (
     <motion.li
@@ -93,7 +97,7 @@ export function StockGroupRow({
             )}
           </div>
           <div className="text-xs text-muted-foreground mt-1 pl-6">
-            {qtyText(group.qty)} shares · average {formatMoney(group.avgPrice, currency)}
+            {qtyText(group.qty)} shares
           </div>
         </button>
 
@@ -101,6 +105,8 @@ export function StockGroupRow({
           {tick && (
             <Stat label="Current Price" value={formatMoney(tick.unitPrice, currency)} />
           )}
+          {group.avgPrice > 0 && <Stat label="Avg Price" value={formatMoney(group.avgPrice, currency)} />}
+          <AlertStat alert={alert} />
           <Stat label="Invested" value={formatMoney(group.invested, currency)} />
           <Stat
             label="Current"
@@ -201,9 +207,32 @@ export function StockGroupRow({
   );
 }
 
-function Stat({ label, value, className = "text-foreground" }: { label: string; value: string; className?: string }) {
+/** The "Price Alert" column; renders nothing for a stock without alerts. */
+export function AlertStat({ alert }: { alert: ReturnType<typeof alertColumnFor> }) {
+  if (!alert) return null;
   return (
-    <div className="text-right">
+    <Stat
+      label="Price Alert"
+      value={`${alert.text}${alert.more ? ` +${alert.more}` : ""}`}
+      title={alert.detail}
+      className={alert.triggered ? "text-emerald-500" : "text-primary"}
+    />
+  );
+}
+
+export function Stat({
+  label,
+  value,
+  title,
+  className = "text-foreground",
+}: {
+  label: string;
+  value: string;
+  title?: string;
+  className?: string;
+}) {
+  return (
+    <div className="text-right" title={title}>
       <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
       <div className={`text-sm font-bold tabular-nums ${className}`}>{value}</div>
     </div>

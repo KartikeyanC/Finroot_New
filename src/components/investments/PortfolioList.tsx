@@ -24,7 +24,10 @@ import { isLiveAsset, useLivePrices } from "@/lib/livePrices";
 import MatrixFilter from "@/components/filters/MatrixFilter";
 import { toINR } from "@/lib/finance";
 import { groupPortfolio } from "@/lib/stockLots";
-import { StockGroupRow, type BuyMorePrefill } from "./StockGroupRow";
+import { AlertStat, Stat, StockGroupRow, type BuyMorePrefill } from "./StockGroupRow";
+import { usePriceAlerts } from "@/hooks/usePriceAlerts";
+import { alertColumnFor, type PriceAlert } from "@/lib/priceAlerts";
+import { resolveSymbol } from "@/lib/livePrices";
 
 interface Props {
   records: InvestmentRecord[];
@@ -38,6 +41,7 @@ const PortfolioList = ({ records, onEdit, onDelete, onBuyMore }: Props) => {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [brokerFilter, setBrokerFilter] = useState<Broker | null>(null);
   const { live, refresh, refreshedAt } = useLivePrices(records);
+  const { alerts } = usePriceAlerts();
   const [spinning, setSpinning] = useState(false);
 
   const handleRefresh = () => {
@@ -157,6 +161,7 @@ const PortfolioList = ({ records, onEdit, onDelete, onBuyMore }: Props) => {
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onBuyMore={onBuyMore}
+                alerts={alerts}
               />
             )
           )}
@@ -191,6 +196,7 @@ function PortfolioRows({
   onEdit,
   onDelete,
   onBuyMore,
+  alerts = [],
 }: {
   records: InvestmentRecord[];
   live: ReturnType<typeof useLivePrices>["live"];
@@ -199,6 +205,7 @@ function PortfolioRows({
   onEdit: (rec: InvestmentRecord) => void;
   onDelete: (id: string) => void;
   onBuyMore?: (prefill: BuyMorePrefill) => void;
+  alerts?: PriceAlert[];
 }) {
   return (
     <ul className="divide-y divide-border mt-3">
@@ -214,6 +221,7 @@ function PortfolioRows({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onBuyMore={onBuyMore}
+                alerts={alerts}
               />
             );
           }
@@ -295,6 +303,10 @@ function PortfolioRows({
                       </div>
                     </div>
                   )}
+                  {r.asset === "stocks" && avgPriceOf(r) > 0 && (
+                    <Stat label="Avg Price" value={formatMoney(avgPriceOf(r), r.currency)} />
+                  )}
+                  {r.asset === "stocks" && <AlertStat alert={alertColumnFor(resolveSymbol(r).symbol, alerts)} />}
                   <div className="text-right">
                     <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Invested</div>
                     <div className="text-sm font-bold text-foreground tabular-nums">
@@ -373,4 +385,12 @@ function PortfolioRows({
       </AnimatePresence>
     </ul>
   );
+}
+
+/** A single stock purchase's buy price (or invested ÷ quantity). */
+function avgPriceOf(r: InvestmentRecord): number {
+  const buy = parseFloat(String(r.fields?.buy ?? ""));
+  if (Number.isFinite(buy) && buy > 0) return buy;
+  const qty = parseFloat(String(r.fields?.qty ?? ""));
+  return qty > 0 ? getInvested(r) / qty : 0;
 }
