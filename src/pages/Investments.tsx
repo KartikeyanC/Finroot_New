@@ -12,6 +12,7 @@ import AddInvestmentDialog from "@/components/investments/AddInvestmentDialog";
 import PortfolioList from "@/components/investments/PortfolioList";
 import DematAccountsSection from "@/components/investments/DematAccountsSection";
 import PriceAlertsSection from "@/components/investments/PriceAlertsSection";
+import type { BuyMorePrefill } from "@/components/investments/StockGroupRow";
 import { InteractiveDonut, NestedDonut } from "@/components/investments/PortfolioDonuts";
 import {
   getCurrent,
@@ -98,6 +99,13 @@ const Investments = () => {
     setOpen(true);
   };
 
+  const [prefill, setPrefill] = useState<BuyMorePrefill | null>(null);
+  const handleBuyMore = (p: BuyMorePrefill) => {
+    setEditing(null);
+    setPrefill(p);
+    setOpen(true);
+  };
+
   const handleEdit = (rec: InvestmentRecord) => {
     setEditing(rec);
     setOpen(true);
@@ -175,16 +183,21 @@ const Investments = () => {
         records={records}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onBuyMore={handleBuyMore}
       />
 
       <AddInvestmentDialog
         open={open}
         onOpenChange={(v) => {
           setOpen(v);
-          if (!v) setEditing(null);
+          if (!v) {
+            setEditing(null);
+            setPrefill(null);
+          }
         }}
         onSave={handleSave}
         initial={editing}
+        prefill={prefill}
       />
     </div>
   );

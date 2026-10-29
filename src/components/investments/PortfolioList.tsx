@@ -23,14 +23,18 @@ import {
 import { isLiveAsset, useLivePrices } from "@/lib/livePrices";
 import MatrixFilter from "@/components/filters/MatrixFilter";
 import { toINR } from "@/lib/finance";
+import { groupPortfolio } from "@/lib/stockLots";
+import { StockGroupRow, type BuyMorePrefill } from "./StockGroupRow";
 
 interface Props {
   records: InvestmentRecord[];
   onEdit: (rec: InvestmentRecord) => void;
   onDelete: (id: string) => void;
+  /** A stock bought more than once offers "Buy more" on its merged row. */
+  onBuyMore?: (prefill: BuyMorePrefill) => void;
 }
 
-const PortfolioList = ({ records, onEdit, onDelete }: Props) => {
+const PortfolioList = ({ records, onEdit, onDelete, onBuyMore }: Props) => {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [brokerFilter, setBrokerFilter] = useState<Broker | null>(null);
   const { live, refresh, refreshedAt } = useLivePrices(records);
@@ -152,6 +156,7 @@ const PortfolioList = ({ records, onEdit, onDelete }: Props) => {
                 setConfirmId={setConfirmId}
                 onEdit={onEdit}
                 onDelete={onDelete}
+                onBuyMore={onBuyMore}
               />
             )
           )}
@@ -185,6 +190,7 @@ function PortfolioRows({
   setConfirmId,
   onEdit,
   onDelete,
+  onBuyMore,
 }: {
   records: InvestmentRecord[];
   live: ReturnType<typeof useLivePrices>["live"];
@@ -192,11 +198,26 @@ function PortfolioRows({
   setConfirmId: (id: string | null) => void;
   onEdit: (rec: InvestmentRecord) => void;
   onDelete: (id: string) => void;
+  onBuyMore?: (prefill: BuyMorePrefill) => void;
 }) {
   return (
     <ul className="divide-y divide-border mt-3">
       <AnimatePresence initial={false}>
-        {records.map((r) => {
+        {/* Several purchases of one stock render as one holding. */}
+        {groupPortfolio(records).map((item) => {
+          if (item.kind === "group") {
+            return (
+              <StockGroupRow
+                key={item.group.key}
+                group={item.group}
+                live={live}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onBuyMore={onBuyMore}
+              />
+            );
+          }
+          const r = item.record;
           const invested = getInvested(r);
           const tick = live[r.id];
           const tracked = isLiveAsset(r.asset) && tick !== undefined;

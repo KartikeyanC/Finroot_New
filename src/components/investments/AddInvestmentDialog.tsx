@@ -27,6 +27,9 @@ import {
 import { useAccounts } from "@/lib/accountsStore";
 import { SymbolPicker } from "./SymbolPicker";
 import { StockPriceAlertField } from "./StockPriceAlertField";
+import { StockPurchaseExtras } from "./StockPurchaseExtras";
+import { Field, NumberInput, OutputBox } from "./formParts";
+import { buyDateOf, fmt, safeNum } from "@/lib/investmentForm";
 import { EMPTY_STOCK_ALERT } from "@/lib/stockAlertDraft";
 import { useStockAlertSaver } from "@/hooks/useStockAlertSaver";
 
@@ -58,90 +61,13 @@ const ASSET_OPTIONS: { value: AssetType; label: string }[] = [
 
 const GOALS: GoalLink[] = ["Retirement", "House Fund", "Kid's Education", "Emergency Stack"];
 
-const safeNum = (v: string | number | undefined): number => {
-  const n = typeof v === "number" ? v : parseFloat(String(v ?? ""));
-  return Number.isFinite(n) ? n : 0;
-};
-const fmt = (n: number, d = 2) => {
-  const v = Number.isFinite(n) ? n : 0;
-  return v.toLocaleString("en-IN", {
-    maximumFractionDigits: d,
-    minimumFractionDigits: d,
-  });
-};
-
-// Hoisted so identity is stable across renders — inline definitions caused
-// the input to remount on every keystroke (focus loss + value stripping).
-const NumberInput = ({
-  id,
-  placeholder,
-  step,
-  value,
-  onChange,
-}: {
-  id: string;
-  placeholder?: string;
-  step?: string;
-  value: string;
-  onChange: (v: string) => void;
-}) => {
-  // Indian-format display (e.g. 1,00,000.50) while storing a plain numeric
-  // string ("100000.5") in form state.
-  const formatIndian = (raw: string) => {
-    if (raw === "" || raw == null) return "";
-    // Preserve a trailing "." while the user is typing decimals.
-    const trailingDot = raw.endsWith(".") && !raw.slice(0, -1).includes(".");
-    const [intPart, decPart] = raw.split(".");
-    if (intPart === "" || intPart === "-") {
-      return raw;
-    }
-    const neg = intPart.startsWith("-");
-    const digits = neg ? intPart.slice(1) : intPart;
-    if (!/^\d+$/.test(digits)) return raw;
-    let formattedInt: string;
-    if (digits.length <= 3) {
-      formattedInt = digits;
-    } else {
-      const last3 = digits.slice(-3);
-      const rest = digits.slice(0, -3);
-      formattedInt = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + last3;
-    }
-    const signed = neg ? "-" + formattedInt : formattedInt;
-    if (decPart !== undefined) return `${signed}.${decPart}`;
-    if (trailingDot) return `${signed}.`;
-    return signed;
-  };
-  return (
-    <Input
-      id={id}
-      type="text"
-      inputMode="decimal"
-      placeholder={placeholder ?? "0.00"}
-      value={formatIndian(value)}
-      onChange={(e) => {
-        const cleaned = e.target.value.replace(/,/g, "");
-        if (cleaned === "" || /^-?\d*\.?\d*$/.test(cleaned)) {
-          onChange(cleaned);
-        }
-      }}
-    />
-  );
-};
-
-const OutputBox = ({ label, value }: { label: string; value: string }) => (
-  <div className="rounded-md border bg-muted/40 px-3 py-2">
-    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
-      {label}
-    </div>
-    <div className="text-sm font-semibold text-foreground mt-0.5">{value}</div>
-  </div>
-);
-
 type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   onSave?: (payload: InvestmentRecord) => void;
   initial?: InvestmentRecord | null;
+  /** "Buy more": open a NEW stock purchase with these fields filled in. */
+  prefill?: { fields: Record<string, string>; broker?: Broker } | null;
 };
 
 export default function AddInvestmentDialog({
@@ -149,6 +75,7 @@ export default function AddInvestmentDialog({
   onOpenChange,
   onSave,
   initial,
+  prefill,
 }: Props) {
   const isEdit = !!initial;
   const { accounts } = useAccounts();
@@ -200,7 +127,12 @@ export default function AddInvestmentDialog({
       setCurrentTouched(true);
       seededIdRef.current = initial.id;
     }
-  }, [open, initial]);
+    if (!initial && prefill && seededIdRef.current !== "prefill") {
+      setForm((f) => ({ ...f, ...prefill.fields }));
+      if (prefill.broker) setBroker(prefill.broker);
+      seededIdRef.current = "prefill";
+    }
+  }, [open, initial, prefill]);
 
   // Reset form when asset changes (skipped on initial seeding)
   useEffect(() => {
@@ -396,6 +328,7 @@ export default function AddInvestmentDialog({
               <OutputBox label="Total Invested" value={fmt(calc.total ?? 0)} />
               <OutputBox label="Buying Avg" value={fmt(calc.avg ?? 0)} />
             </div>
+            <StockPurchaseExtras form={form} set={set} editingId={initial?.id} savedAt={initial?.savedAt} currency={currency} />
             <StockPriceAlertField ticker={form.ticker} value={stockAlert} onChange={setStockAlert} />
           </div>
         );
@@ -693,9 +626,11 @@ export default function AddInvestmentDialog({
       mfMode: asset === "mutual_funds" ? mfMode : undefined,
       goldType: asset === "gold" ? goldType : undefined,
       bondFreq: asset === "bonds" ? bondFreq : undefined,
-      fields: linkedAccountId && linkedAccountId !== "none"
-        ? { ...form, _accountId: linkedAccountId }
-        : form,
+      fields: {
+        ...form,
+        ...(asset === "stocks" ? { buy_date: buyDateOf(form, initial?.savedAt) } : {}),
+        ...(linkedAccountId && linkedAccountId !== "none" ? { _accountId: linkedAccountId } : {}),
+      },
       derived: calc as Record<string, number>,
       savedAt: initial?.savedAt ?? new Date().toISOString(),
     };
@@ -830,22 +765,5 @@ export default function AddInvestmentDialog({
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function Field({
-  label,
-  children,
-}: {
-  label: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs font-medium text-muted-foreground flex items-center">
-        {label}
-      </Label>
-      {children}
-    </div>
   );
 }
