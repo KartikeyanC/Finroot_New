@@ -13,7 +13,7 @@ const TabsList = React.forwardRef<
     ref={ref}
     className={cn(
       // height hugs the triggers (no fixed h-12 that left a big gap above/below the active pill); thin even track
-      "inline-flex items-center justify-center rounded-full bg-background border border-border/50 p-1 text-muted-foreground shadow-sm",
+      "inline-flex items-center justify-center rounded-full bg-foreground/5 dark:bg-foreground/10 p-1 text-foreground/70",
       className,
     )}
     {...props}
@@ -29,7 +29,7 @@ const TabsTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       // transparent border on every state so the box size never changes between active/inactive (prevents misalignment)
-      "inline-flex items-center justify-center whitespace-nowrap rounded-full border border-transparent px-4 py-1.5 text-sm font-medium leading-none ring-offset-background transition-all",
+      "inline-flex items-center justify-center whitespace-nowrap rounded-full border border-transparent px-4 py-1.5 text-sm font-semibold leading-none ring-offset-background transition-all",
       // inactive
       "text-muted-foreground hover:text-foreground hover:bg-primary/8",
       // BUG-094 — the active pill used to be a translucent green tint
@@ -43,7 +43,7 @@ const TabsTrigger = React.forwardRef<
       // a fixed pair with a verified ratio (see the `--primary` note in
       // index.css), so it clears AA the same way everywhere this component is
       // used, rather than passing or failing per page by chance.
-      "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:font-semibold data-[state=active]:shadow-sm",
+      "data-[state=active]:bg-gradient-to-r data-[state=active]:from-brand-a data-[state=active]:to-brand-b data-[state=active]:text-brand-foreground data-[state=active]:font-semibold data-[state=active]:shadow-sm",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
       "disabled:pointer-events-none disabled:opacity-50",
       className,
